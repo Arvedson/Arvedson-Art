@@ -1,4 +1,5 @@
 import https from "https";
+import { IncomingMessage } from "http";
 import { imageSize } from "image-size";
 
 export async function getImageDimensions(imageUrl: string): Promise<{ width: number; height: number }> {
@@ -9,7 +10,12 @@ export async function getImageDimensions(imageUrl: string): Promise<{ width: num
       return;
     }
 
-    https.get(validatedImageUrl, (response) => {
+    https.get(validatedImageUrl, (response: IncomingMessage) => {
+      if (typeof response.statusCode !== "number") {
+        reject(new Error("No se recibió un código de estado en la respuesta HTTP."));
+        return;
+      }
+
       if (!processHttpResponse(response, reject)) return;
 
       const chunks: Uint8Array[] = [];
@@ -69,8 +75,7 @@ function validateAndCleanImageUrl(url: string): string | null {
   }
 }
 
-
-function processHttpResponse(response: { statusCode: number }, reject: (reason?: Error) => void): boolean {
+function processHttpResponse(response: IncomingMessage, reject: (reason?: Error) => void): boolean {
   if (response.statusCode !== 200) {
     const error = new Error(`Error al descargar la imagen: Código de estado ${response.statusCode}`);
     console.error(error.message);
