@@ -95,7 +95,7 @@ const ContactPage = () => {
       
       setSubmitSuccess(true);
       setFormData({ name: '', email: '', message: '' });
-    } catch (error) {
+    } catch {
       setSubmitError('Error al enviar el formulario. Por favor intenta nuevamente.');
     } finally {
       setIsSubmitting(false);
@@ -215,24 +215,22 @@ const ContactPage = () => {
             </div>
 
             {/* Información de ubicación */}
-{/* Información de ubicación */}
-<div className={`${themeClasses.sectionBg} p-8 rounded-xl shadow-lg`}>
-  <h2 className={`text-2xl font-bold ${themeClasses.textPrimary} mb-4`}>
-    Nuestra ubicación
-  </h2>
-  <div className="aspect-w-16 aspect-h-9 rounded-lg overflow-hidden">
-    <iframe
-      src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d10000!2d-103.37681107552336!3d25.57262968310857!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2z25.572630N,-103.376811W!5e0!3m2!1ses!2smx!4v1711040200000!5m2!1ses!2smx"
-      width="100%"
-      height="300"
-      style={{ border: 0 }}
-      allowFullScreen
-      loading="lazy"
-      className="rounded-lg"
-    />
-  </div>
-</div>
-
+            <div className={`${themeClasses.sectionBg} p-8 rounded-xl shadow-lg`}>
+              <h2 className={`text-2xl font-bold ${themeClasses.textPrimary} mb-4`}>
+                Nuestra ubicación
+              </h2>
+              <div className="aspect-w-16 aspect-h-9 rounded-lg overflow-hidden">
+                <iframe
+                  src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d10000!2d-103.37681107552336!3d25.57262968310857!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2z25.572630N,-103.376811W!5e0!3m2!1ses!2smx!4v1711040200000!5m2!1ses!2smx"
+                  width="100%"
+                  height="300"
+                  style={{ border: 0 }}
+                  allowFullScreen
+                  loading="lazy"
+                  className="rounded-lg"
+                />
+              </div>
+            </div>
           </div>
         </div>
       </div>

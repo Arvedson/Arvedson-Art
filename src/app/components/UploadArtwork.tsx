@@ -1,8 +1,17 @@
 "use client";
 import { useState } from "react";
 
+interface FormValues {
+  title: string;
+  description: string;
+  order: string;
+  medidas: string;
+  tecnica: string;
+  marco: string;
+}
+
 export default function UploadArtwork() {
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<FormValues>({
     title: "",
     description: "",
     order: "",
@@ -81,12 +90,16 @@ export default function UploadArtwork() {
         setError(errorData.error || "Error al subir el cuadro");
         console.error("Error from server:", errorData);
       }
-    } catch (error: any) {
-      setError(error.message || "Error al subir el cuadro");
-      console.error("Error:", error);
-    } finally {
-      setIsSubmitting(false);
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        setError(error.message || "Error al subir el cuadro");
+        console.error("Error:", error.message);
+      } else {
+        setError("Error desconocido al subir el cuadro");
+        console.error("Error desconocido:", error);
+      }
     }
+    
   };
 
   return (
@@ -238,3 +251,4 @@ export default function UploadArtwork() {
     </form>
   );
 }
+

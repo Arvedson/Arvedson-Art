@@ -3,6 +3,7 @@
 import React, { useState } from "react";
 import { SunIcon, MoonIcon } from "@heroicons/react/24/solid";
 import useTheme from "@/hooks/useTheme";
+import Link from 'next/link';
 
 const Navbar = () => {
   const [isMobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -28,7 +29,7 @@ const Navbar = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between h-16 items-center">
           <div className="flex-shrink-0">
-            <a href="/" className="flex items-center">
+            <Link href="/" className="flex items-center">
               <h1
                 className={`text-2xl font-bold ${
                   theme === "light" ? "text-gray-900" : "text-white"
@@ -36,23 +37,26 @@ const Navbar = () => {
               >
                 Arvedson • Art
               </h1>
-            </a>
+            </Link>
           </div>
 
           <div className="hidden md:flex space-x-4 items-center">
-            {["Home", "About", "Services", "Contact"].map((item, index) => (
-              <a
-                key={index}
-                href={item === "Home" ? "/" : `/${item.toLowerCase()}`}
-                className={`px-3 py-2 rounded-md text-sm font-medium transition-colors duration-300 ${
-                  theme === "light"
-                    ? "hover:bg-gray-200 text-gray-900"
-                    : "hover:bg-gray-700 text-white"
-                }`}
-              >
-                {item}
-              </a>
-            ))}
+            {["Home", "About", "Services", "Contact"].map((item, index) => {
+              const href = item === "Home" ? "/" : `/${item.toLowerCase()}`;
+              return (
+                <Link key={index} href={href} className="no-underline">
+                  <span
+                    className={`px-3 py-2 rounded-md text-sm font-medium transition-colors duration-300 ${
+                      theme === "light"
+                        ? "hover:bg-gray-200 text-gray-900"
+                        : "hover:bg-gray-700 text-white"
+                    }`}
+                  >
+                    {item}
+                  </span>
+                </Link>
+              );
+            })}
             <button
               onClick={toggleTheme}
               className="flex items-center justify-center p-2 rounded-md transition-colors duration-300 hover:bg-gray-200 dark:hover:bg-gray-700 focus:outline-none"
@@ -125,19 +129,22 @@ const Navbar = () => {
           isMobileMenuOpen ? "max-h-[500px]" : "max-h-0"
         }`}
       >
-        {["Home", "About", "Services", "Contact"].map((item, index) => (
-          <a
-            key={index}
-            href={item === "Home" ? "/" : `/${item.toLowerCase()}`}
-            className={`block px-3 py-2 text-base font-medium transition-colors duration-300 ${
-              theme === "light"
-                ? "hover:bg-gray-200 text-gray-900"
-                : "hover:bg-gray-700 text-white"
-            }`}
-          >
-            {item}
-          </a>
-        ))}
+        {["Home", "About", "Services", "Contact"].map((item, index) => {
+          const href = item === "Home" ? "/" : `/${item.toLowerCase()}`;
+          return (
+            <Link key={index} href={href} className="no-underline">
+              <span
+                className={`block px-3 py-2 text-base font-medium transition-colors duration-300 ${
+                  theme === "light"
+                    ? "hover:bg-gray-200 text-gray-900"
+                    : "hover:bg-gray-700 text-white"
+                }`}
+              >
+                {item}
+              </span>
+            </Link>
+          );
+        })}
       </div>
     </nav>
   );

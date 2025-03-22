@@ -18,10 +18,9 @@ type Artwork = {
 };
 
 export default function Gallery2() {
-  const [artworks, setArtworks] = useState<Artwork[]>([]);
+  const [artworksWithOrder, setArtworksWithOrder] = useState<Artwork[]>([]);
   const [selectedImages, setSelectedImages] = useState<string[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [artworksWithOrder, setArtworksWithOrder] = useState<Artwork[]>([]);
   const [editingOrder, setEditingOrder] = useState<number | null>(null);
   const inputRefs = useRef<Map<number, HTMLInputElement>>(new Map());
 
@@ -31,9 +30,7 @@ export default function Gallery2() {
         const res = await fetch("/api/artworks");
         if (!res.ok) throw new Error("Error fetching artworks");
         const data: Artwork[] = await res.json();
-        setArtworks(data);
-        const sortedArtworks = data.sort((a, b) => a.order - b.order);
-        setArtworksWithOrder(sortedArtworks);
+        setArtworksWithOrder(data.sort((a, b) => a.order - b.order));
       } catch (error) {
         console.error("Error al obtener las obras de arte:", error);
       }
@@ -85,7 +82,6 @@ export default function Gallery2() {
         const res = await fetch("/api/artworks");
         if (res.ok) {
           const data: Artwork[] = await res.json();
-          setArtworks(data);
           setArtworksWithOrder(data.sort((a, b) => a.order - b.order));
         }
       } else {
@@ -120,7 +116,6 @@ export default function Gallery2() {
         const res = await fetch("/api/artworks");
         if (res.ok) {
           const data: Artwork[] = await res.json();
-          setArtworks(data);
           setArtworksWithOrder(data.sort((a, b) => a.order - b.order));
         }
       } else {
@@ -283,5 +278,4 @@ export default function Gallery2() {
     </div>
   );
 }
-
 

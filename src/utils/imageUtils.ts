@@ -59,13 +59,18 @@ function validateAndCleanImageUrl(url: string): string | null {
       throw new Error("Protocolo no soportado.");
     }
     return urlObj.toString();
-  } catch (error) {
-    console.error("URL inválida:", error.message);
+  } catch (error: unknown) {
+    if (error instanceof Error) {
+      console.error("URL inválida:", error.message);
+    } else {
+      console.error("URL inválida: Error desconocido.");
+    }
     return null;
   }
 }
 
-function processHttpResponse(response: any, reject: (reason?: any) => void): boolean {
+
+function processHttpResponse(response: { statusCode: number }, reject: (reason?: Error) => void): boolean {
   if (response.statusCode !== 200) {
     const error = new Error(`Error al descargar la imagen: Código de estado ${response.statusCode}`);
     console.error(error.message);
