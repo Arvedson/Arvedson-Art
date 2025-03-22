@@ -1,12 +1,17 @@
-// utils/firebaseAdmin.ts
 import * as admin from "firebase-admin";
 
 // Check if Firebase Admin SDK is already initialized
 if (!admin.apps.length) {
     try {
         // Initialize Firebase Admin SDK with environment variables
+        const firebaseConfig = {
+            projectId: process.env.FIREBASE_PROJECT_ID,
+            privateKey: process.env.FIREBASE_PRIVATE_KEY?.replace(/\\n/g, "\n"), // Corregir saltos de línea
+            clientEmail: process.env.FIREBASE_CLIENT_EMAIL,
+        };
+
         admin.initializeApp({
-            credential: admin.credential.applicationDefault(), // Use Google Application Default Credentials
+            credential: admin.credential.cert(firebaseConfig),
             storageBucket: process.env.FIREBASE_STORAGE_BUCKET,
         });
         console.log("Firebase Admin SDK inicializado correctamente.");
