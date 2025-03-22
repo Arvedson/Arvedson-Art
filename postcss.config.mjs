@@ -2,6 +2,9 @@
 const config = {
   plugins: {
     tailwindcss: {},
+    autoprefixer: {
+      overrideBrowserslist: ['safari >= 10', 'iOS >= 10'], // Ajusta las versiones de Safari 
+    },
   },
 };
 

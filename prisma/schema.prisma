@@ -1,0 +1,48 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+
+model Artwork {
+  id          Int       @id @default(autoincrement())
+  title       String
+  description String
+  mainImageUrl String  // URL de la imagen principal
+  width       Int       // Ancho de la imagen principal en píxeles
+  height      Int       // Alto de la imagen principal en píxeles
+  order       Int       @unique
+  createdAt   DateTime  @default(now())
+  subImages   SubImage[] // Relación con las subimágenes
+  medidas     String?   // Nuevo: Campo para las medidas
+  tecnica     String?   // Nuevo: Campo para la técnica
+  marco       String?   // Nuevo: Campo para el marco
+}
+
+
+model SubImage {
+  id        Int      @id @default(autoincrement())
+  artworkId Int      // ID de la obra de arte asociada
+  imageUrl  String   // URL de la subimagen
+  createdAt DateTime @default(now())
+  artwork   Artwork  @relation(fields: [artworkId], references: [id])
+}
+
+
+model Testimonial {
+  id          Int      @id @default(autoincrement())
+  name        String   // Nombre del cliente
+  testimonial String   // Testimonio del cliente
+  rating      Int      // Calificación (1 a 5)
+  createdAt   DateTime @default(now())
+}
