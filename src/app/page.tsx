@@ -5,22 +5,16 @@ import Introduction from "./components/Introduction";
 import Testimonials from "./components/Testimonials ";
 import SocialMediaSection from "./components/SocialMediaSection";
 
-
-
-
 export default function Home() {
   return (
-    <div >
-      <Hero/>
-      <FadeSeparator/>
-      <Introduction/>
-      
-      <Gallery/>
-      <Testimonials/>
-      <SocialMediaSection/>
-    
-      
-     
+    <div>
+      <Hero />
+      <FadeSeparator />
+      <Introduction />
+
+      <Gallery showMoreCard={true} maxItems={6} /> {/* Pass maxItems here */}
+      <Testimonials />
+      <SocialMediaSection />
     </div>
   );
 }

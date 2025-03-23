@@ -67,7 +67,7 @@ const About = () => {
         <div className="text-center">
           <h2 className="text-3xl font-bold mb-6">¿Quiénes Somos?</h2>
           <p className="text-lg mb-8">
-            En <strong className="text-[var(--primary)]">Artdav_</strong>, nos
+            En <strong className="text-[var(--primary)]">Arvedson • Art</strong>, nos
             apasiona crear cuadros personalizados que capturen tus momentos más
             especiales. Con años de experiencia en el arte y la personalización,
             nos enorgullece ofrecer productos de alta calidad y un servicio

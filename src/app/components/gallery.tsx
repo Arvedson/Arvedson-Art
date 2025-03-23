@@ -1,5 +1,5 @@
 "use client";
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect } from "react";
 import { Carousel } from "react-responsive-carousel";
 import "react-responsive-carousel/lib/styles/carousel.min.css";
 import useTheme from "@/hooks/useTheme";
@@ -21,23 +21,30 @@ type Artwork = {
 
 type GalleryProps = {
   showMoreCard?: boolean;
+  maxItems?: number; // New prop to limit the number of items displayed
 };
 
 const ArtDetails = ({ art, theme }: { art: Artwork; theme: string }) => {
   const [isExpanded, setIsExpanded] = useState(false);
-  const [descriptionHeight, setDescriptionHeight] = useState<string>('0px'); // Cambiado el tipo a string
-  const textRef = useRef<HTMLParagraphElement>(null);
+  const [descriptionHeight, setDescriptionHeight] = useState<string>('0px');
+  const [textRef, setTextRef] = useState<HTMLParagraphElement | null>(null); // Use useState instead of useRef
+
+    useEffect(() => {
+        const updateDescriptionHeight = () => {
+            if (textRef) {
+                setDescriptionHeight(isExpanded ? `${textRef.scrollHeight}px` : '0px');
+            }
+        };
+        updateDescriptionHeight();
+    }, [isExpanded, textRef]);
+
+
 
   const toggleExpanded = (event: React.MouseEvent<HTMLButtonElement>) => {
     event.stopPropagation();
     setIsExpanded(!isExpanded);
   };
 
-  useEffect(() => {
-    if (textRef.current) {
-      setDescriptionHeight(isExpanded ? `${textRef.current.scrollHeight}px` : '0px');
-    }
-  }, [isExpanded]);
 
   return (
     <div className="p-4">
@@ -51,7 +58,7 @@ const ArtDetails = ({ art, theme }: { art: Artwork; theme: string }) => {
         {art.title}
       </h2>
       <p
-        ref={textRef}
+        ref={(el) => setTextRef(el)} // Use the ref callback to set the state
         className={`text-sm overflow-hidden transition-all duration-300 ${
           theme === "light"
             ? "text-[var(--foreground)]"
@@ -70,7 +77,7 @@ const ArtDetails = ({ art, theme }: { art: Artwork; theme: string }) => {
               : "text-blue-800 hover:text-blue-800"
           } py-1 px-2`}
         >
-          {isExpanded ? "Cerrar" : "Descripcion"}
+          {isExpanded ? "Cerrar" : "Descripción"}
           {isExpanded ? (
             <ChevronUpIcon className="w-3 h-3 ml-1" />
           ) : (
@@ -97,11 +104,12 @@ const ArtDetails = ({ art, theme }: { art: Artwork; theme: string }) => {
   );
 };
 
-const Gallery: React.FC<GalleryProps> = ({ showMoreCard = true }) => {
+const Gallery: React.FC<GalleryProps> = ({ showMoreCard = true, maxItems }) => {
   const [artworks, setArtworks] = useState<Artwork[]>([]);
   const [selectedImages, setSelectedImages] = useState<string[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const theme = useTheme();
+  const [displayedArtworks, setDisplayedArtworks] = useState<Artwork[]>([]); // Add this state
 
   useEffect(() => {
     const fetchArtworks = async () => {
@@ -109,13 +117,24 @@ const Gallery: React.FC<GalleryProps> = ({ showMoreCard = true }) => {
         const res = await fetch("/api/artworks");
         if (!res.ok) throw new Error("Error fetching artworks");
         const data: Artwork[] = await res.json();
-        setArtworks(data.sort((a, b) => a.order - b.order));
+        const sortedArtworks = data.sort((a, b) => a.order - b.order);
+        setArtworks(sortedArtworks);
       } catch (error) {
         console.error("Error al obtener las obras de arte:", error);
       }
     };
     fetchArtworks();
   }, []);
+
+  useEffect(() => {
+    // Determine which artworks to display
+    if (maxItems !== undefined) { // changed from if(maxItems)
+      setDisplayedArtworks(artworks.slice(0, maxItems));
+    } else {
+      setDisplayedArtworks(artworks);
+    }
+  }, [artworks, maxItems]);
+
 
   const handleArtworkClick = (
     mainImageUrl: string,
@@ -128,6 +147,10 @@ const Gallery: React.FC<GalleryProps> = ({ showMoreCard = true }) => {
   const closeModal = () => {
     setIsModalOpen(false);
   };
+
+
+  const shouldShowMoreCard = showMoreCard && artworks.length > displayedArtworks.length;
+
 
   return (
     <div
@@ -148,7 +171,7 @@ const Gallery: React.FC<GalleryProps> = ({ showMoreCard = true }) => {
       </h1>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-        {artworks.map((art) => (
+        {displayedArtworks.map((art) => (
           <div
             key={art.id}
             className={`group rounded-lg shadow-lg transition-shadow border fade-in cursor-pointer ${
@@ -163,14 +186,14 @@ const Gallery: React.FC<GalleryProps> = ({ showMoreCard = true }) => {
                 src={art.mainImageUrl}
                 alt={art.title}
                 className="w-full h-full object-cover rounded-t-lg"
-                loading="lazy" 
+                loading="lazy"
               />
             </div>
             <ArtDetails art={art} theme={theme} />
           </div>
         ))}
 
-        {showMoreCard && (
+        {shouldShowMoreCard && ( // Solo mostrar si hay más elementos
           <div
             onClick={() => (window.location.href = "/galeria")}
             className={`group rounded-lg shadow-lg hover:shadow-xl transition-shadow border fade-in cursor-pointer flex flex-col items-center justify-center ${
@@ -265,12 +288,12 @@ const Gallery: React.FC<GalleryProps> = ({ showMoreCard = true }) => {
             >
               {selectedImages.map((url, index) => (
                 <div key={index}>
-                  <div className="relative w-full h-[60vh]">
+                  <div className="relative w-full h-[60vh] flex items-center justify-center">
                     <img
                       src={url}
                       alt={`Imagen ${index}`}
-                      className="w-full h-full object-contain rounded-lg"
-                      loading="lazy" 
+                      className="w-auto max-h-full object-contain rounded-lg"
+                      loading="lazy"
                     />
                   </div>
                 </div>
@@ -284,3 +307,4 @@ const Gallery: React.FC<GalleryProps> = ({ showMoreCard = true }) => {
 };
 
 export default Gallery;
+
