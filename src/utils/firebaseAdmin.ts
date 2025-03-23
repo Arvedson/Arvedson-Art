@@ -1,14 +1,13 @@
 import * as admin from "firebase-admin";
 
-// Verificar si Firebase Admin SDK ya está inicializado
+// Check if Firebase Admin SDK is already initialized
 if (!admin.apps.length) {
     try {
-        // Inicializar Firebase Admin SDK con las variables de entorno
+        // Initialize Firebase Admin SDK with environment variables
         const firebaseConfig = {
             projectId: process.env.FIREBASE_PROJECT_ID,
-            privateKey: process.env.FIREBASE_PRIVATE_KEY
-                ? process.env.FIREBASE_PRIVATE_KEY.replace(/\\n/g, '\n')
-                : undefined,
+            privateKey: process.env.FIREBASE_PRIVATE_KEY ? JSON.parse(process.env.FIREBASE_PRIVATE_KEY) : undefined,
+
             clientEmail: process.env.FIREBASE_CLIENT_EMAIL,
         };
 
@@ -16,7 +15,6 @@ if (!admin.apps.length) {
             credential: admin.credential.cert(firebaseConfig),
             storageBucket: process.env.FIREBASE_STORAGE_BUCKET,
         });
-
         console.log("Firebase Admin SDK inicializado correctamente.");
     } catch (error) {
         console.error("Error al inicializar Firebase Admin SDK:", error);
