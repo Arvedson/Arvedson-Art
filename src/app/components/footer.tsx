@@ -34,9 +34,9 @@ export default function Footer() {
             </h3>
             <ul className="space-y-2">
               {[
-                { name: "Galería", link: "/Galeria" },
-                { name: "Contacto", link: "/Contact" },
-                { name: "Servicios", link: "/Services" }
+                { name: "Galería", link: "/galeria" },
+                { name: "Contacto", link: "/contact" },
+                { name: "Servicios", link: "/services" }
               ].map((item) => (
                 <li key={item.name}>
                   <a

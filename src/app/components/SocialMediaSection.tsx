@@ -26,7 +26,7 @@ export default function SocialMediaSection() {
 
   return (
     <section
-    className={` px-6 py-24 fade-in transition-all duration-300 mb-[80px] ${
+    className={` px-6 py-12 fade-in transition-all duration-300 mb-[80px] ${
       theme === "light"
         ? "bg-[var(--background)] text-[var(--foreground)]"
         : "bg-[var(--primaryblue)] text-[var(--primaryblue)]"

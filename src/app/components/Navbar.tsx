@@ -1,9 +1,9 @@
 "use client";
 
-import React, {  useEffect, useRef } from "react";
+import React, { useEffect, useRef } from "react";
 import { SunIcon, MoonIcon } from "@heroicons/react/24/solid";
 import useTheme from "@/hooks/useTheme";
-import Link from 'next/link';
+import Link from "next/link";
 
 interface NavbarProps {
   isMobileMenuOpen: boolean;
@@ -24,9 +24,9 @@ const Navbar: React.FC<NavbarProps> = ({ isMobileMenuOpen, toggleMobileMenu }) =
     { label: "Acerca de", href: "/about" },
     { label: "Servicios", href: "/services" },
     { label: "Contacto", href: "/contact" },
+    { label: "Sobre Mí", href: "/sobremi" }, // Nueva sección añadida aquí
   ];
 
-  // Close menu when clicking outside
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (
@@ -46,18 +46,20 @@ const Navbar: React.FC<NavbarProps> = ({ isMobileMenuOpen, toggleMobileMenu }) =
 
   return (
     <nav
-      className={`transition-all duration-300 sticky top-0 z-[999] border-b ${theme === "light"
-        ? "bg-white text-gray-900 border-[#d4af37]"
-        : "bg-gray-900 text-white border-gray-700"
-        }`}
+      className={`transition-all duration-300 sticky top-0 z-[999] border-b ${
+        theme === "light"
+          ? "bg-white text-gray-900 border-[#d4af37]"
+          : "bg-gray-900 text-white border-gray-700"
+      }`}
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between h-16 items-center">
           <div className="flex-shrink-0">
             <Link href="/" className="flex items-center">
               <h1
-                className={`text-2xl font-bold ${theme === "light" ? "text-gray-900" : "text-white"
-                  }`}
+                className={`text-2xl font-bold ${
+                  theme === "light" ? "text-gray-900" : "text-white"
+                }`}
               >
                 Arvedson • Art
               </h1>
@@ -68,10 +70,11 @@ const Navbar: React.FC<NavbarProps> = ({ isMobileMenuOpen, toggleMobileMenu }) =
             {navItems.map((item, index) => (
               <Link key={index} href={item.href} className="no-underline">
                 <span
-                  className={`px-3 py-2 rounded-md text-sm font-medium transition-colors duration-300 ${theme === "light"
-                    ? "hover:bg-gray-200 text-gray-900"
-                    : "hover:bg-gray-700 text-white"
-                    }`}
+                  className={`px-3 py-2 rounded-md text-sm font-medium transition-colors duration-300 ${
+                    theme === "light"
+                      ? "hover:bg-gray-200 text-gray-900"
+                      : "hover:bg-gray-700 text-white"
+                  }`}
                 >
                   {item.label}
                 </span>
@@ -146,17 +149,19 @@ const Navbar: React.FC<NavbarProps> = ({ isMobileMenuOpen, toggleMobileMenu }) =
       {/* Mobile Menu with Animation */}
       <div
         ref={mobileMenuRef}
-        className={`md:hidden overflow-hidden transition-max-height duration-300 ease-in-out ${isMobileMenuOpen ? "max-h-[500px]" : "max-h-0"
-          }`}
+        className={`md:hidden overflow-hidden transition-max-height duration-300 ease-in-out ${
+          isMobileMenuOpen ? "max-h-[500px]" : "max-h-0"
+        }`}
       >
         {navItems.map((item, index) => (
           <Link key={index} href={item.href} className="no-underline">
             <span
               onClick={toggleMobileMenu}
-              className={`block px-3 py-2 text-base font-medium transition-colors duration-300 ${theme === "light"
-                ? "hover:bg-gray-200 text-gray-900"
-                : "hover:bg-gray-700 text-white"
-                }`}
+              className={`block px-3 py-2 text-base font-medium transition-colors duration-300 ${
+                theme === "light"
+                  ? "hover:bg-gray-200 text-gray-900"
+                  : "hover:bg-gray-700 text-white"
+              }`}
             >
               {item.label}
             </span>
