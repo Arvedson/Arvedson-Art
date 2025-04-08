@@ -36,11 +36,11 @@ interface OrderInfo {
 }
 
 interface PrepagoProps {
-  artwork: Artwork;
+  artwork: Artwork ;
   onClose: () => void;
 }
 
-const Prepago = ({ artwork, onClose }: PrepagoProps) => {
+const Prepago: React.FC<PrepagoProps> = ({ artwork, onClose }) => {
   const [paymentSuccess, setPaymentSuccess] = useState(false);
   const [cuadroPrice, setCuadroPrice] = useState(5000);
   const [selectedAddress, setSelectedAddress] = useState<Address | null>(null);

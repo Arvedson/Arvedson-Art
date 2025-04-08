@@ -37,7 +37,7 @@ const CarritoCompra = () => {
   };
   
   const handleRemoveAddress = () => {
-    dispatch({ type: 'UPDATE_ADDRESS', payload: undefined });
+    dispatch({ type: 'UPDATE_ADDRESS', payload: null }); 
   };
   
   const handleRemoveCustomer = () => {

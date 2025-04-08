@@ -7,7 +7,7 @@ import { ChevronDownIcon, ChevronUpIcon, ShoppingCartIcon, XCircleIcon } from "@
 import Prepago from "./prepago";
 
 type Artwork = {
-    id: number;
+    id: string;
     title: string;
     description: string;
     mainImageUrl: string;
@@ -28,7 +28,6 @@ type GalleryProps = {
 const ArtDetails = ({ art, theme }: { art: Artwork; theme: string }) => {
     const [isExpanded, setIsExpanded] = useState(false);
     const textRef = useRef<HTMLParagraphElement | null>(null);
-
     return (
         <div className="p-4 flex flex-col gap-2">
             <h2 className={`text-lg font-bold line-clamp-1 ${theme === "light" ? "text-foreground" : "text-foreground-dark"}`}>
@@ -140,7 +139,6 @@ const Gallery: React.FC<GalleryProps> = ({ showMoreCard = true, maxItems }) => {
             <h1 className="text-4xl font-bold text-center mb-8 text-foreground">
                 Pide una replica
             </h1>
-
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
                 {displayedArtworks.map((art) => (
                     <article
@@ -171,7 +169,6 @@ const Gallery: React.FC<GalleryProps> = ({ showMoreCard = true, maxItems }) => {
                         <ArtDetails art={art} theme={theme} />
                     </article>
                 ))}
-
                 {shouldShowMoreCard && (
                     <article
                         className="group rounded-lg shadow-lg overflow-hidden transition-transform duration-200 
@@ -204,56 +201,55 @@ const Gallery: React.FC<GalleryProps> = ({ showMoreCard = true, maxItems }) => {
                     </article>
                 )}
             </div>
-
             {activeModal && (
-  <div 
-    className="fixed inset-0 z-50 bg-black/80 flex items-center justify-center p-4 mt-16"
-    onClick={closeModal} // Cierra al hacer clic fuera
-  >
-    <div 
-      className="relative bg-card rounded-lg shadow-xl max-w-4xl w-full h-[80vh] flex flex-col border border-[var(--border)]"
-      onClick={(e) => e.stopPropagation()} // Evita cierre accidental
-    >
-      <button
-        onClick={closeModal}
-        className="absolute top-4 right-4 z-50 p-2 rounded-full bg-danger text-white hover:bg-danger-dark transition-colors"
-      >
-        <XCircleIcon className="w-6 h-6" />
-      </button>
-      
-      <div className="flex-1 overflow-y-auto"> {/* Contenedor scrollable */}
-        {activeModal === 'gallery' ? (
-          <Carousel
-          showThumbs={false}
-          showStatus={false}
-          infiniteLoop={true}
-          useKeyboardArrows={true}
-          dynamicHeight={true}
-        >
-          {selectedImages.map((imageUrl, index) => (
-            <div key={index}>
-              <img
-                src={imageUrl}
-                alt={`Detalle ${index + 1}`}
-                className="w-full h-auto max-h-[70vh] object-contain"
-                onError={(e) => {
-                  (e.target as HTMLImageElement).src = '/placeholder-artwork.jpg';
-                }}
-              />
-            </div>
-          ))}
-        </Carousel>
-        ) : (
-          <Prepago 
-            artwork={selectedArtwork} 
-            onClose={closeModal}
-      
-          />
-        )}
-      </div>
-    </div>
-  </div>
-)}
+                <div 
+                    className="fixed inset-0 z-50 bg-black/80 flex items-center justify-center p-4 mt-16"
+                    onClick={closeModal}
+                >
+                    <div 
+                        className="relative bg-card rounded-lg shadow-xl max-w-4xl w-full h-[80vh] flex flex-col border border-[var(--border)]"
+                        onClick={(e) => e.stopPropagation()}
+                    >
+                        <button
+                            onClick={closeModal}
+                            className="absolute top-4 right-4 z-50 p-2 rounded-full bg-danger text-white hover:bg-danger-dark transition-colors"
+                        >
+                            <XCircleIcon className="w-6 h-6" />
+                        </button>
+                        <div className="flex-1 overflow-y-auto">
+                            {activeModal === 'gallery' ? (
+                                <Carousel
+                                    showThumbs={false}
+                                    showStatus={false}
+                                    infiniteLoop={true}
+                                    useKeyboardArrows={true}
+                                    dynamicHeight={true}
+                                >
+                                    {selectedImages.map((imageUrl, index) => (
+                                        <div key={index}>
+                                            <img
+                                                src={imageUrl}
+                                                alt={`Detalle ${index + 1}`}
+                                                className="w-full h-auto max-h-[70vh] object-contain"
+                                                onError={(e) => {
+                                                    (e.target as HTMLImageElement).src = '/placeholder-artwork.jpg';
+                                                }}
+                                            />
+                                        </div>
+                                    ))}
+                                </Carousel>
+                            ) : (
+                                selectedArtwork && (
+                                    <Prepago 
+                                        artwork={selectedArtwork}
+                                        onClose={closeModal}
+                                    />
+                                )
+                            )}
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     );
 };

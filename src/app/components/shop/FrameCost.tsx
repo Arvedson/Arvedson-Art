@@ -38,31 +38,45 @@ export default function FrameCost() {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = async (e: FormEvent) => {
-    e.preventDefault();
-    try {
-      const url = editing !== null ? `/api/framecost/${editing}` : "/api/framecost";
-      const method = editing !== null ? "PUT" : "POST";
 
-      const res = await fetch(url, {
-        method,
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          width: Number(form.width),
-          height: Number(form.height),
-          price: Number(form.price)
-        }),
-      });
+const handleSubmit = async (e: FormEvent) => {
+  e.preventDefault();
+  try {
+    const queryParams = editing !== null ? `?id=${editing}` : "";
+    const url = `/api/framecost${queryParams}`;
+    const method = editing !== null ? "PUT" : "POST";
 
-      if (res.ok) {
-        fetchFrames();
-        setForm({ width: "", height: "", price: "" });
-        setEditing(null);
-      }
-    } catch (error) {
-      console.error("Error submitting form:", error);
+    const res = await fetch(url, {
+      method,
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        width: Number(form.width),
+        height: Number(form.height),
+        price: Number(form.price)
+      }),
+    });
+
+    if (res.ok) {
+      fetchFrames();
+      setForm({ width: "", height: "", price: "" });
+      setEditing(null);
     }
-  };
+  } catch (error) {
+    console.error("Error submitting form:", error);
+  }
+};
+
+
+const handleDelete = async (id: number) => {
+  try {
+    const res = await fetch(`/api/framecost?id=${id}`, { method: "DELETE" });
+    if (res.ok) {
+      fetchFrames();
+    }
+  } catch (error) {
+    console.error("Error deleting frame:", error);
+  }
+};
 
   const handleEdit = (frame: Frame) => {
     setEditing(frame.id);
@@ -73,18 +87,7 @@ export default function FrameCost() {
     });
   };
 
-  const handleDelete = async (id: number) => {
-    try {
-      const res = await fetch(`/api/framecost/${id}`, {
-        method: "DELETE",
-      });
-      if (res.ok) {
-        fetchFrames();
-      }
-    } catch (error) {
-      console.error("Error deleting frame:", error);
-    }
-  };
+
 
   return (
     <div className="p-4">
