@@ -137,31 +137,53 @@ export async function PUT(req: NextRequest) {
 // DELETE: Eliminar un cuadro en stock y sus subimágenes asociadas
 export async function DELETE(req: NextRequest) {
   try {
-    const id = parseInt(new URL(req.url).searchParams.get("id") || "");
+    const idParam = new URL(req.url).searchParams.get("id");
+    const id = idParam ? parseInt(idParam) : NaN;
 
-    if (!id) {
+    if (isNaN(id)) {
       return NextResponse.json({ error: "ID inválido" }, { status: 400 });
     }
 
-    // Primero eliminamos las imágenes de Firebase Storage
     const artwork = await prisma.stockArtwork.findUnique({
       where: { id },
       include: { subImages: true },
     });
 
-    if (artwork) {
-      // Eliminar imagen principal
-      const mainImagePath = decodeURIComponent(
-        new URL(artwork.mainImageUrl).pathname.split('/o/')[1].split('?')[0]
-      );
-      await bucket.file(mainImagePath).delete();
+    if (!artwork) {
+      return NextResponse.json({ error: "Cuadro no encontrado" }, { status: 404 });
+    }
 
-      // Eliminar subimágenes
-      for (const subImage of artwork.subImages) {
-        const subImagePath = decodeURIComponent(
-          new URL(subImage.imageUrl).pathname.split('/o/')[1].split('?')[0]
+    // Eliminar imagen principal si existe
+    if (artwork.mainImageUrl) {
+      try {
+        const mainImageUrl = new URL(artwork.mainImageUrl);
+        const mainImagePath = decodeURIComponent(
+          mainImageUrl.pathname.split('/o/')[1]?.split('?')[0] || ''
         );
-        await bucket.file(subImagePath).delete().catch(console.error);
+
+        if (mainImagePath) {
+          await bucket.file(mainImagePath).delete();
+        }
+      } catch (error) {
+        console.error("Error al procesar la URL de la imagen principal:", error);
+      }
+    }
+
+    // Eliminar subimágenes si existen
+    for (const subImage of artwork.subImages) {
+      if (subImage.imageUrl) {
+        try {
+          const subImageUrl = new URL(subImage.imageUrl);
+          const subImagePath = decodeURIComponent(
+            subImageUrl.pathname.split('/o/')[1]?.split('?')[0] || ''
+          );
+
+          if (subImagePath) {
+            await bucket.file(subImagePath).delete().catch(console.error);
+          }
+        } catch (error) {
+          console.error("Error al procesar la URL de la subimagen:", error);
+        }
       }
     }
 
@@ -176,7 +198,7 @@ export async function DELETE(req: NextRequest) {
       { status: 200 }
     );
   } catch (error) {
-    console.error(error);
+    console.error("Error al eliminar el cuadro en stock:", error);
     return NextResponse.json(
       { error: "Error al eliminar el cuadro en stock" },
       { status: 500 }
