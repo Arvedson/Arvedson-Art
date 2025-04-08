@@ -31,7 +31,7 @@ if (!admin.apps.length) {
       });
     } catch (error) {
       console.error("Error detallado:", error); // Debug 3
-      throw new Error(`Firebase init failed: ${error}`);
+      throw new Error(`Firebase init faiiled: ${error}`);
     }
   }
 
