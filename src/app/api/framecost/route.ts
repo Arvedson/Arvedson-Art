@@ -1,20 +1,40 @@
-import { NextResponse, NextRequest } from "next/server";
-import type { Params } from 'next'; // Importa Params
+import { NextResponse } from "next/server";
 import { PrismaClient } from "@prisma/client";
 
 const prisma = new PrismaClient();
 
-export async function PUT(
-  request: NextRequest,
-  { params }: { params: Params } // Cambio clave aquí
-) {
+interface FramePriceCreateData {
+  width: number;
+  height: number;
+  price: number;
+}
+
+export async function GET() {
+  try {
+    const frames = await prisma.framePrice.findMany();
+    return NextResponse.json(frames);
+  } catch (error) {
+    console.error("Error fetching frames:", error);
+    return NextResponse.json(
+      { error: "Error fetching frames" },
+      { status: 500 }
+    );
+  }
+}
+
+export async function POST(request: Request) {
   try {
     const body = await request.json();
-    const { width, height, price } = body;
-    const id = Number(params.id); // Convierte a número
+    const { width, height, price } = body as Partial<FramePriceCreateData>;
 
-    const updatedFrame = await prisma.framePrice.update({
-      where: { id },
+    if (!width || !height || !price) {
+      return NextResponse.json(
+        { error: "Missing required fields" },
+        { status: 400 }
+      );
+    }
+
+    const newFrame = await prisma.framePrice.create({
       data: {
         width: Number(width),
         height: Number(height),
@@ -22,27 +42,12 @@ export async function PUT(
       },
     });
 
-    return NextResponse.json(updatedFrame);
+    return NextResponse.json(newFrame, { status: 201 });
   } catch (error) {
-    console.error("Error updating frame:", error);
-    return NextResponse.json({ error: "Error updating frame" }, { status: 500 });
-  }
-}
-
-export async function DELETE(
-  _request: NextRequest,
-  { params }: { params: Params } // Cambio clave aquí
-) {
-  try {
-    const id = Number(params.id);
-    
-    await prisma.framePrice.delete({
-      where: { id },
-    });
-
-    return NextResponse.json({ message: "Frame deleted successfully" });
-  } catch (error) {
-    console.error("Error deleting frame:", error);
-    return NextResponse.json({ error: "Error deleting frame" }, { status: 500 });
+    console.error("Error creating frame:", error);
+    return NextResponse.json(
+      { error: "Error creating frame" },
+      { status: 500 }
+    );
   }
 }
