@@ -1,46 +1,45 @@
 import * as admin from "firebase-admin";
 
-// Check if Firebase Admin SDK is already initialized
+// Verificar que todas las variables de entorno requeridas estén definidas
+const requiredEnvVars = [
+  'FIREBASE_PROJECT_ID',
+  'FIREBASE_PRIVATE_KEY',
+  'FIREBASE_CLIENT_EMAIL',
+  'FIREBASE_STORAGE_BUCKET'
+];
+
+for (const varName of requiredEnvVars) {
+  if (!process.env[varName]) {
+    throw new Error(`Falta la variable de entorno requerida: ${varName}`);
+  }
+}
+
 if (!admin.apps.length) {
-    try {
-        // Initialize Firebase Admin SDK with environment variables
-        const firebaseConfig = {
-            projectId: process.env.FIREBASE_PROJECT_ID,
-            privateKey: process.env.FIREBASE_PRIVATE_KEY ? JSON.parse(process.env.FIREBASE_PRIVATE_KEY) : undefined,
+  try {
+    console.log("Inicializando Firebase Admin SDK...");
 
-            clientEmail: process.env.FIREBASE_CLIENT_EMAIL,
-        };
+    // Construir el objeto de credenciales a partir de las variables separadas usando camelCase
+    const serviceAccount: admin.ServiceAccount = {
+      projectId: process.env.FIREBASE_PROJECT_ID!,
+      // Reemplaza las secuencias "\n" por saltos de línea reales
+      privateKey: process.env.FIREBASE_PRIVATE_KEY!.replace(/\\n/g, "\n"),
+      clientEmail: process.env.FIREBASE_CLIENT_EMAIL!,
+    };
 
-        admin.initializeApp({
-            credential: admin.credential.cert(firebaseConfig),
-            storageBucket: process.env.FIREBASE_STORAGE_BUCKET,
-        });
-        console.log("Firebase Admin SDK inicializado correctamente.");
-    } catch (error) {
-        console.error("Error al inicializar Firebase Admin SDK:", error);
-        throw new Error("No se pudo inicializar Firebase Admin SDK.");
-    }
+    console.log("Credenciales preparadas.");
+
+    admin.initializeApp({
+      credential: admin.credential.cert(serviceAccount),
+      storageBucket: process.env.FIREBASE_STORAGE_BUCKET!,
+    });
+
+    console.log("Firebase Admin SDK inicializado correctamente");
+  } catch (error) {
+    const errorMessage =
+      error instanceof Error ? error.message : JSON.stringify(error);
+    console.error("Error crítico en inicialización:", error);
+    throw new Error("Fallo en Firebase Admin SDK: " + errorMessage);
+  }
 }
 
 export const bucket = admin.storage().bucket();
-
-// Función para subir archivos al bucket en la carpeta 'art-dav'
-export async function uploadFileToFirebase(
-    filePath: string,
-    destinationFileName: string
-): Promise<string> {
-    const file = bucket.file(`art-dav/${destinationFileName}`); // Ruta específica dentro del bucket
-    await bucket.upload(filePath, {
-        destination: file.name,
-        public: true, // Hacer el archivo público (opcional)
-    });
-    console.log("Archivo subido correctamente.");
-
-    // Obtener la URL pública del archivo
-    const [url] = await file.getSignedUrl({
-        action: "read",
-        expires: "03-09-2491", // Fecha de expiración (opcional)
-    });
-    console.log("URL del archivo:", url);
-    return url;
-}
