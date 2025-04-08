@@ -4,43 +4,47 @@
 @tailwind utilities;
 
 
-/* Variables de color para modo claro y modo oscuro */
 :root {
-  --background: #fefefe; /* Blanco cálido */
-  --foreground: #2d2d2d; /* Gris oscuro */
-  --primary: #b99c6b; /* Oro suave */
-  --secondary: #e0e0e0; /* Gris claro */
-  --accent: #d4af37; /* Oro brillante */
-  --muted: #f5f5f5; /* Gris muy claro */
-  --border: #dcdcdc; /* Gris neutro */
-  --primaryblue: #111827; /* Gris oscuro intenso */
+  --background: #fefefe;
+  --foreground: #2d2d2d;
+  --primary: #b99c6b;
+  --secondary: #e0e0e0;
+  --accent: #d4af37;
+  --muted: #f5f5f5; 
+  --muted2: #6d6d6d; /* color auxiliar antibugs */
+  --border: #dcdcdc;
+  --primaryblue: #111827;
+  --card: #ffffff; /* Fondo de cards en light mode */
+  --white: #fefefe;
+  --border: #dcdcdc; /* Borde en light mode (gris claro) */
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #121212; /* Negro profundo */
-    --foreground: #e4e4e4; /* Gris claro */
-    --primary: #c59d5f; /* Oro cálido */
-    --secondary: #1f2933; /* Gris oscuro azulado */
-    --accent: #d4af37; /* Oro brillante */
-    --muted: #202020; /* Gris muy oscuro */
-    --border: #343434; /* Gris intermedio */
-    --primaryblue: #111827; /* Gris oscuro intenso (igual para dark) */
-  }
+/* Variables para modo oscuro */
+[data-theme='dark'] {
+  --background: #121212;
+  --foreground: #e4e4e4;
+  --primary: #c59d5f;
+  --secondary: #1f2933;
+  --accent: #d4af37;
+  --muted: #a0a0a0;
+  --muted2: #a0a0a0; 
+  --border: #343434;
+  --primaryblue: #111827;
+  --card: #1e1e1e; 
+  --white: #fefefe;
 }
-
 
 
 /* Configuración general del cuerpo */
 /* Estilos para el modo claro (por defecto) */
+/* Configuración general del cuerpo */
 body {
   font-family: 'Inter', Arial, Helvetica, sans-serif;
   line-height: 1.6;
   margin: 0;
   transition: background-color 0.3s ease, color 0.3s ease;
-
-  background-color: var(--background); /* Fondo claro */
-  color: var(--foreground); /* Texto oscuro */
+  background-color: var(--background);
+  color: var(--foreground);
 }
 
 /* Estilos para el modo oscuro */
@@ -183,3 +187,13 @@ th {
   }
 }
 
+@layer utilities {
+  @keyframes fadeInOut {
+    0%, 100% { opacity: 0; transform: translateY(-10px); }
+    10%, 90% { opacity: 1; transform: translateY(0); }
+  }
+
+  .animate-fadeInOut {
+    animation: fadeInOut 2s ease-in-out forwards;
+  }
+}

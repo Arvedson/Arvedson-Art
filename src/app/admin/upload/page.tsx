@@ -1,49 +1,131 @@
-
 "use client";
 import { useState } from "react";
 import Gallery2 from "@/app/components/Gallery2";
 import UploadArtwork from "@/app/components/UploadArtwork";
 import TestimonialsAdmin from "@/app/components/TestimonialsAdmin";
-
+import StockGallery from "@/app/components/StockGallery ";
+import UploadStockArtwork from "@/app/components/UploadStockArtwork ";
+import FrameCost from "@/app/components/shop/FrameCost";
 
 export default function AdminPage() {
-  const [activeForm, setActiveForm] = useState<"artwork" | "testimonial">("artwork");
+  const [activeTab, setActiveTab] = useState<
+    "upload" | "gallery" | "testimonials" | "stock" | "prices"
+  >("upload");
+  const [activeForm, setActiveForm] = useState<"artwork" | "stock" | "testimonial">("artwork");
 
   return (
-    <div>
-      <div className="flex flex-col items-center justify-center min-h-screen bg-gray-50 py-6 sm:py-12">
-        <div className="w-full max-w-lg bg-white p-8 rounded-lg shadow-md">
-          <h1 className="text-2xl font-bold text-gray-800 mb-6">Panel de Administración</h1>
-          {/* Selector de formulario */}
-          <div className="flex justify-around mb-6">
-            <button
-              onClick={() => setActiveForm("artwork")}
-              className={`py-2 px-4 rounded-md font-medium ${
-                activeForm === "artwork"
-                  ? "bg-indigo-600 text-white"
-                  : "bg-gray-200 text-gray-800 hover:bg-gray-300"
-              }`}
-            >
-              Subir Cuadro
-            </button>
-            <button
-              onClick={() => setActiveForm("testimonial")}
-              className={`py-2 px-4 rounded-md font-medium ${
-                activeForm === "testimonial"
-                  ? "bg-indigo-600 text-white"
-                  : "bg-gray-200 text-gray-800 hover:bg-gray-300"
-              }`}
-            >
-              Subir Testimonio
-            </button>
-          </div>
-          {/* Formulario activo */}
-          {activeForm === "artwork" && <UploadArtwork />}
-          {activeForm === "testimonial" && <UploadTestimonial />}
+    <div className="min-h-screen bg-gray-50">
+      <div className="container mx-auto px-4 py-8">
+        <h1 className="text-3xl font-bold text-gray-800 mb-8 text-center">Panel de Administración</h1>
+        
+        {/* Navegación principal actualizada */}
+        <div className="flex flex-wrap justify-center gap-4 mb-8">
+          <button
+            onClick={() => setActiveTab("upload")}
+            className={`px-6 py-2 rounded-md font-medium transition-colors ${
+              activeTab === "upload"
+                ? "bg-indigo-600 text-white"
+                : "bg-gray-200 text-gray-800 hover:bg-gray-300"
+            }`}
+          >
+            Subir Contenido
+          </button>
+          <button
+            onClick={() => setActiveTab("gallery")}
+            className={`px-6 py-2 rounded-md font-medium transition-colors ${
+              activeTab === "gallery"
+                ? "bg-indigo-600 text-white"
+                : "bg-gray-200 text-gray-800 hover:bg-gray-300"
+            }`}
+          >
+            Galería de Réplicas
+          </button>
+          <button
+            onClick={() => setActiveTab("stock")}
+            className={`px-6 py-2 rounded-md font-medium transition-colors ${
+              activeTab === "stock"
+                ? "bg-indigo-600 text-white"
+                : "bg-gray-200 text-gray-800 hover:bg-gray-300"
+            }`}
+          >
+            Cuadros en Stock
+          </button>
+          <button
+            onClick={() => setActiveTab("testimonials")}
+            className={`px-6 py-2 rounded-md font-medium transition-colors ${
+              activeTab === "testimonials"
+                ? "bg-indigo-600 text-white"
+                : "bg-gray-200 text-gray-800 hover:bg-gray-300"
+            }`}
+          >
+            Testimonios
+          </button>
+          <button
+            onClick={() => setActiveTab("prices")}
+            className={`px-6 py-2 rounded-md font-medium transition-colors ${
+              activeTab === "prices"
+                ? "bg-indigo-600 text-white"
+                : "bg-gray-200 text-gray-800 hover:bg-gray-300"
+            }`}
+          >
+            Gestión de Precios
+          </button>
+        </div>
+
+        {/* Contenido actualizado con la nueva sección */}
+        <div className="bg-white rounded-lg shadow-md p-6">
+          {activeTab === "upload" && (
+            <div>
+              <div className="flex justify-center gap-4 mb-6">
+                <button
+                  onClick={() => setActiveForm("artwork")}
+                  className={`px-4 py-2 rounded-md font-medium ${
+                    activeForm === "artwork"
+                      ? "bg-indigo-600 text-white"
+                      : "bg-gray-200 text-gray-800 hover:bg-gray-300"
+                  }`}
+                >
+                  Subir Réplica
+                </button>
+                <button
+                  onClick={() => setActiveForm("stock")}
+                  className={`px-4 py-2 rounded-md font-medium ${
+                    activeForm === "stock"
+                      ? "bg-indigo-600 text-white"
+                      : "bg-gray-200 text-gray-800 hover:bg-gray-300"
+                  }`}
+                >
+                  Subir Stock
+                </button>
+                <button
+                  onClick={() => setActiveForm("testimonial")}
+                  className={`px-4 py-2 rounded-md font-medium ${
+                    activeForm === "testimonial"
+                      ? "bg-indigo-600 text-white"
+                      : "bg-gray-200 text-gray-800 hover:bg-gray-300"
+                  }`}
+                >
+                  Subir Testimonio
+                </button>
+              </div>
+              
+              {activeForm === "artwork" && <UploadArtwork />}
+              {activeForm === "stock" && <UploadStockArtwork />}
+              {activeForm === "testimonial" && <UploadTestimonial />}
+            </div>
+          )}
+
+          {activeTab === "gallery" && <Gallery2 />}
+          {activeTab === "stock" && <StockGallery />}
+          {activeTab === "testimonials" && <TestimonialsAdmin />}
+          {activeTab === "prices" && (
+            <div className="space-y-6">
+              <h2 className="text-2xl font-semibold text-gray-800">Gestión de Precios de Marcos</h2>
+              <FrameCost />
+            </div>
+          )}
         </div>
       </div>
-      <Gallery2 />
-      <TestimonialsAdmin/>
     </div>
   );
 }

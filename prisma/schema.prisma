@@ -14,6 +14,12 @@ datasource db {
 }
 
 
+enum ProductType {
+  CUSTOM_ARTWORK
+  STOCK_ARTWORK
+  REPLICA_ARTWORK
+}
+
 model Artwork {
   id          Int       @id @default(autoincrement())
   title       String
@@ -45,4 +51,38 @@ model Testimonial {
   testimonial String   // Testimonio del cliente
   rating      Int      // Calificación (1 a 5)
   createdAt   DateTime @default(now())
+}
+
+model StockArtwork {
+  id            Int             @id @default(autoincrement())
+  title         String
+  description   String
+  mainImageUrl  String
+  width         Int
+  height        Int
+  price         Float
+  stockQuantity Int
+  order         Int             @default(0) // Campo para ordenar
+  createdAt     DateTime        @default(now())
+  subImages     StockSubImage[]
+  medidas       String?
+  tecnica       String?
+  marco         String?
+}
+
+model StockSubImage {
+  id              Int          @id @default(autoincrement())
+  stockArtworkId  Int
+  imageUrl        String
+  createdAt       DateTime     @default(now())
+  stockArtwork    StockArtwork @relation(fields: [stockArtworkId], references: [id])
+}
+
+model FramePrice {
+  id     Int @id @default(autoincrement())
+  width  Int
+  height Int
+  price  Int
+
+  @@unique([width, height])
 }
