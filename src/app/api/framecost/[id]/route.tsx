@@ -3,11 +3,18 @@ import { PrismaClient } from "@prisma/client";
 
 const prisma = new PrismaClient();
 
-// Función PUT corregida
+interface RouteParams {
+  params: {
+    id: string;
+  };
+}
+
+
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  context: RouteParams
 ) {
+  const { params } = context;
   try {
     const body = await request.json();
     const { width, height, price } = body;
@@ -32,18 +39,17 @@ export async function PUT(
   }
 }
 
-// Función DELETE corregida
+
 export async function DELETE(
   _request: NextRequest,
-  { params }: { params: { id: string } }
+  context: { params: { id: string } }
 ) {
+  const { params } = context;
   try {
     const id = Number(params.id);
-    
     await prisma.framePrice.delete({
       where: { id },
     });
-
     return NextResponse.json({ message: "Frame deleted successfully" });
   } catch (error) {
     console.error("Error deleting frame:", error);
@@ -53,3 +59,4 @@ export async function DELETE(
     );
   }
 }
+
