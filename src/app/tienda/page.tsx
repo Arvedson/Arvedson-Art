@@ -187,7 +187,7 @@ const TiendaPage = () => {
                             {tab === 'originales' && <FaPaintBrush className="mr-2" />}
                             {tab === 'replicas' && <FaPalette className="mr-2" />}
                             {tab === 'personalizado' && <FaMagic className="mr-2" />}
-                            {tab === 'originales' ? 'Obras Originales' : 
+                            {tab === 'originales' ? 'Obras Disponibles' : 
                              tab === 'replicas' ? 'Réplicas' : 'Personalizado'}
                         </motion.button>
                     ))}
@@ -206,7 +206,7 @@ const TiendaPage = () => {
                                 <section>
                                     <h2 className="text-2xl md:text-3xl font-bold mb-6 text-[var(--foreground)] flex items-center">
                                         <FaPaintBrush className="mr-3 text-blue-600" />
-                                        Obras Originales
+                                        Obras Disponibles
                                     </h2>
                                     <StockGrid />
                                 </section>

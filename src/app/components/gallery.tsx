@@ -28,6 +28,7 @@ type GalleryProps = {
 const ArtDetails = ({ art, theme }: { art: Artwork; theme: string }) => {
     const [isExpanded, setIsExpanded] = useState(false);
     const textRef = useRef<HTMLParagraphElement | null>(null);
+    
     return (
         <div className="p-4 flex flex-col gap-2">
             <h2 className={`text-lg font-bold line-clamp-1 ${theme === "light" ? "text-foreground" : "text-foreground-dark"}`}>
@@ -68,18 +69,18 @@ const ArtDetails = ({ art, theme }: { art: Artwork; theme: string }) => {
             </div>
             <div className="mt-2 space-y-1">
                 {art.medidas && (
-                    <p className="text-xs text-[color:var(--foreground)] dark:text-[color:var(--foreground)]">
-                    Medidas: {art.medidas}
+                    <p className="text-xs text-[color:var(--foreground)]">
+                        Medidas: {art.medidas}
                     </p>
                 )}
                 {art.tecnica && (
-                    <p className="text-xs text-[color:var(--foreground)] dark:text-[color:var(--foreground)]">
-                    Técnica: {art.tecnica}
+                    <p className="text-xs text-[color:var(--foreground)]">
+                        Técnica: {art.tecnica}
                     </p>
                 )}
                 {art.marco && (
-                    <p className="text-xs text-[color:var(--foreground)] dark:text-[color:var(--foreground)]">
-                    Marco: {art.marco}
+                    <p className="text-xs text-[color:var(--foreground)]">
+                        Marco: {art.marco}
                     </p>
                 )}
             </div>
@@ -135,23 +136,25 @@ const Gallery: React.FC<GalleryProps> = ({ showMoreCard = true, maxItems }) => {
     const shouldShowMoreCard = showMoreCard && artworks.length > displayedArtworks.length;
 
     return (
-        <div className={`container p-6 ${theme === "light" ? "bg-background" : "bg-background-dark"}`}>
-            <h1 className="text-4xl font-bold text-center mb-8 text-foreground">
+        <div className={`container p-6 ${theme === "light" ? "bg-background" : "bg-background-dark " }`}>
+            <h1 className="text-4xl font-bold text-center mb-10 text-foreground">
                 Pide una replica
             </h1>
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+            
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
                 {displayedArtworks.map((art) => (
                     <article
                         key={art.id}
-                        className="group rounded-lg shadow-lg overflow-hidden transition-transform duration-200 
+                        className="group relative rounded-lg shadow-lg overflow-hidden transition-all duration-300
                                  bg-[var(--card)] border border-[var(--border)] hover:shadow-xl
-                                 dark:border-[var(--secondary)]"
+                                 dark:border-[var(--secondary)] flex flex-col"
                     >
-                        <div className="relative aspect-[4/3]">
+                        <div className="relative w-full h-64 bg-gray-100 dark:bg-[var(--secondary)] flex items-center justify-center p-4">
+
                             <img
                                 src={art.mainImageUrl}
                                 alt={art.title}
-                                className="w-full object-cover"
+                                className="w-full h-full object-contain cursor-zoom-in"
                                 loading="lazy"
                                 onClick={() => openGalleryModal(art)}
                             />
@@ -160,50 +163,61 @@ const Gallery: React.FC<GalleryProps> = ({ showMoreCard = true, maxItems }) => {
                                     e.stopPropagation();
                                     openBuyModal(art);
                                 }}
-                                className="absolute top-2 right-2 p-2 rounded-full bg-primary/90 hover:bg-primary transition-colors"
+                                className="absolute top-2 right-2 p-2 rounded-full bg-primary/90 hover:bg-primary transition-colors shadow-lg"
                                 aria-label="Comprar obra"
                             >
                                 <ShoppingCartIcon className="w-6 h-6 text-white" />
                             </button>
                         </div>
-                        <ArtDetails art={art} theme={theme} />
+                        
+                        <div className="flex-1 p-4">
+                            <ArtDetails art={art} theme={theme} />
+                        </div>
                     </article>
                 ))}
-                {shouldShowMoreCard && (
-                    <article
-                        className="group rounded-lg shadow-lg overflow-hidden transition-transform duration-200 
-                                 bg-[var(--card)] border border-[var(--border)] hover:shadow-xl
-                                 dark:border-[var(--secondary)]"
-                    >
-                        <a
-                            href="/galeria"
-                            className="flex flex-col items-center justify-center h-full p-6 text-center"
-                        >
-                            <div className="flex items-center justify-center h-12 w-12 rounded-full mb-4 
-                                       bg-[var(--primary)] text-white dark:bg-[var(--primary)] dark:text-[var(--foreground)]">
-                                <svg
-                                    xmlns="http://www.w3.org/2000/svg"
-                                    className="h-6 w-6"
-                                    fill="none"
-                                    viewBox="0 0 24 24"
-                                    stroke="currentColor"
-                                >
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-                                </svg>
-                            </div>
-                            <h2 className="text-lg font-bold mb-2 text-[var(--foreground)]">
-                                Ver galería completa
-                            </h2>
-                            <p className="text-sm text-[var(--primary)] dark:text-[var(--primary)]">
-                                Explora más cuadros en nuestra galería
-                            </p>
-                        </a>
-                    </article>
-                )}
+
+{shouldShowMoreCard && (
+    <article
+        className="group relative rounded-lg shadow-lg overflow-hidden transition-all duration-300 
+                   bg-[var(--card)] border border-[var(--border)] hover:shadow-xl
+                   flex flex-col"
+    >
+        <a
+            href="/galeria"
+            className="flex flex-col items-center justify-center h-full p-6 text-center 
+                       bg-[var(--primary)] hover:bg-[var(--accent)] transition-colors
+                       text-[var(--text-on-primary)] hover:text-[var(--text-on-accent)]"
+        >
+            <div className="flex items-center justify-center h-12 w-12 rounded-full mb-4 
+                       bg-[var(--primary-bg)] text-[var(--primary)]">
+                <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="h-6 w-6"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                >
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                </svg>
             </div>
+
+            <h2 className="text-lg font-bold mb-2">
+                Ver galería completa
+            </h2>
+
+            <p className="text-sm">
+                Explora más cuadros en nuestra galería
+            </p>
+        </a>
+    </article>
+)}
+
+
+            </div>
+
             {activeModal && (
                 <div 
-                    className="fixed inset-0 z-50 bg-black/80 flex items-center justify-center p-4 mt-16"
+                    className="fixed inset-0 z-50 bg-black/80 flex items-center justify-center p-4"
                     onClick={closeModal}
                 >
                     <div 

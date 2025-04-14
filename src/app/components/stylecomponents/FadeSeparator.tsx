@@ -1,29 +1,74 @@
 "use client";
 
 import React from "react";
-import useTheme from "@/hooks/useTheme"; // Importamos el hook personalizado
+import useTheme from "@/hooks/useTheme";
 
 interface FadeSeparatorProps {
-  flip?: boolean; // Voltear el gradiente
+  flip?: boolean;
+  topColor?: string | { light: string; dark: string };
+  bottomColor?: string | { light: string; dark: string };
+  height?: number;
+  fadeToTransparent?: "top" | "bottom" | "both";
 }
 
-const FadeSeparator: React.FC<FadeSeparatorProps> = ({ flip = false }) => {
-  const theme = useTheme(); // Usamos el hook para obtener el tema actual
+const FadeSeparator: React.FC<FadeSeparatorProps> = ({
+  flip = false,
+  topColor,
+  bottomColor,
+  height = 50,
+  fadeToTransparent
+}) => {
+  const theme = useTheme();
 
-  // Establecemos el color final basado en el tema
-  const endColor = theme === "light" ? "#2d2d2d" : "#1a202c";
+  // Defaults usando variables CSS
+  const themeDefaults = {
+    light: {
+      top: "var(--primary-bg)",
+      bottom: "var(--foreground)"
+    },
+    dark: {
+      top: "var(--background)",
+      bottom: "var(--secondary)"
+    }
+  };
+
+  // Resuelve colores con soporte para transparencia
+  const resolveColor = (position: "top" | "bottom"): string => {
+    // Manejar fadeToTransparent primero
+    if (fadeToTransparent) {
+      if (fadeToTransparent === "both") return "transparent";
+      if (fadeToTransparent === position) return "transparent";
+    }
+
+    // Obtener configuración de color
+    const colorConfig = position === "top" ? topColor : bottomColor;
+    
+    // Si es string, usar para ambos temas
+    if (typeof colorConfig === "string") return colorConfig;
+    
+    // Si es objeto, seleccionar según tema
+    if (colorConfig) return colorConfig[theme];
+    
+    // Default del tema
+    return themeDefaults[theme][position];
+  };
+
+  // Determinar colores finales
+  const top = resolveColor("top");
+  const bottom = resolveColor("bottom");
 
   return (
     <div
       style={{
         position: "relative",
-        height: "50px",
+        height: `${height}px`,
         background: flip
-          ? `linear-gradient(to bottom, ${endColor} 0%, rgba(0, 0, 0, 0) 100%)`
-          : `linear-gradient(to bottom, rgba(0, 0, 0, 0) 0%, ${endColor} 100%)`,
-        marginTop: flip ? "0" : "-50px",
-        marginBottom: flip ? "-50px" : "0",
-        zIndex: 1, // Asegura que el gradiente esté encima del fondo
+          ? `linear-gradient(to bottom, ${bottom} 0%, ${top} 100%)`
+          : `linear-gradient(to bottom, ${top} 0%, ${bottom} 100%)`,
+        marginTop: flip ? "0" : `-${height}px`,
+        marginBottom: flip ? `-${height}px` : "0",
+        zIndex: 1,
+        transition: "background 500ms cubic-bezier(0.4, 0, 0.2, 1)"
       }}
     />
   );

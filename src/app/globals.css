@@ -5,33 +5,40 @@
 
 
 :root {
+  --text-on-primary: #ffffff;
+  --text-on-accent: #1a1a1a;
   --background: #fefefe;
   --foreground: #2d2d2d;
   --primary: #b99c6b;
+  --primary-bg: #f5f3ef;
   --secondary: #e0e0e0;
   --accent: #d4af37;
-  --muted: #f5f5f5; 
-  --muted2: #6d6d6d; /* color auxiliar antibugs */
+  --muted: #f5f5f5;
+  --muted2: #6d6d6d;
   --border: #dcdcdc;
   --primaryblue: #111827;
-  --card: #ffffff; /* Fondo de cards en light mode */
+  --card: #ffffff;
   --white: #fefefe;
-  --border: #dcdcdc; /* Borde en light mode (gris claro) */
+  --negative: #ff6666; /* Rojo más intenso en modo diurno */
 }
 
-/* Variables para modo oscuro */
 [data-theme='dark'] {
+  --text-on-primary: #1a1a1a;
+  --text-on-accent: #ffffff;
+ 
   --background: #121212;
   --foreground: #e4e4e4;
   --primary: #c59d5f;
+  --primary-bg: #2d2a22;
   --secondary: #1f2933;
   --accent: #d4af37;
   --muted: #a0a0a0;
-  --muted2: #a0a0a0; 
+  --muted2: #a0a0a0;
   --border: #343434;
   --primaryblue: #111827;
-  --card: #1e1e1e; 
+  --card: #1e1e1e;
   --white: #fefefe;
+  --negative: #ffcccc; /* Color negativo en modo diurno (rosa claro) */
 }
 
 
@@ -119,6 +126,7 @@ button:disabled {
   max-width: 1280px;
   margin: 0 auto;
   padding: 1rem;
+  
 }
 
 

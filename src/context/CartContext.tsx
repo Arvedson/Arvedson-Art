@@ -16,6 +16,7 @@ interface CartItem {
 
 
 interface CustomerInfo {
+  name?: string;
   email?: string;
   phone?: string;
 }
