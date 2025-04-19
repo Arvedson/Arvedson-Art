@@ -1,52 +1,22 @@
 // Contexto del Carrito actualizado
 "use client";
-import { Address } from '../types/types'
+
 import React, { createContext, useContext, useReducer, ReactNode } from 'react';
-
-interface CartItem {
-  id: number;
-  name: string;
-  price: number;
-  quantity: number;
-   metadata?: {  // ← Agregar este campo
-      width: string;
-     height: string;
-   };
-}
-
-
-interface CustomerInfo {
-  name?: string;
-  email?: string;
-  phone?: string;
-}
-
-interface CartState {
-  items: CartItem[];
-  address: Address | null;
-  customer?: CustomerInfo;
-}
-
-type Action =
-  | { type: 'ADD_ITEM'; payload: CartItem }
-  | { type: 'REMOVE_ITEM'; payload: { id: number } }
-  | { type: 'UPDATE_QUANTITY'; payload: { id: number; quantity: number } }
-  | { type: 'RESET_CART' }
-  | { type: 'UPDATE_ADDRESS'; payload: Address | null }
-  | { type: 'UPDATE_CUSTOMER'; payload: CustomerInfo | undefined };
+import { CartState, CartAction } from '../types/cart';
 
 const initialState: CartState = {
   items: [],
   address: null,
-  customer: undefined
+  customer: undefined,
 };
 
-function cartReducer(state: CartState, action: Action): CartState {
+function cartReducer(state: CartState, action: CartAction): CartState {
   switch (action.type) {
     case 'ADD_ITEM': {
+      console.log('Adding item:', action.payload); // Log del producto añadido
       const existingItem = state.items.find(item => item.id === action.payload.id);
       if (existingItem) {
-        return {
+        const newState = {
           ...state,
           items: state.items.map(item =>
             item.id === action.payload.id
@@ -54,20 +24,28 @@ function cartReducer(state: CartState, action: Action): CartState {
               : item
           ),
         };
+        console.log('Updated state after ADD_ITEM:', newState); // Log del estado actualizado
+        return newState;
       }
-      return {
+      const newState = {
         ...state,
         items: [...state.items, { ...action.payload, quantity: 1 }],
       };
+      console.log('Updated state after ADD_ITEM:', newState); // Log del estado actualizado
+      return newState;
     }
     case 'REMOVE_ITEM': {
-      return {
+      console.log('Removing item with id:', action.payload.id); // Log del producto eliminado
+      const newState = {
         ...state,
         items: state.items.filter(item => item.id !== action.payload.id),
       };
+      console.log('Updated state after REMOVE_ITEM:', newState); // Log del estado actualizado
+      return newState;
     }
     case 'UPDATE_QUANTITY': {
-      return {
+      console.log('Updating quantity for item id:', action.payload.id, 'New quantity:', action.payload.quantity); // Log del cambio de cantidad
+      const newState = {
         ...state,
         items: state.items.map(item =>
           item.id === action.payload.id
@@ -75,12 +53,17 @@ function cartReducer(state: CartState, action: Action): CartState {
             : item
         ),
       };
+      console.log('Updated state after UPDATE_QUANTITY:', newState); // Log del estado actualizado
+      return newState;
     }
     case 'RESET_CART':
+      console.log('Resetting cart'); // Log del reseteo del carrito
       return { ...initialState };
     case 'UPDATE_ADDRESS':
+      console.log('Updating address:', action.payload); // Log de la dirección actualizada
       return { ...state, address: action.payload || null };
     case 'UPDATE_CUSTOMER':
+      console.log('Updating customer info:', action.payload); // Log de la información del cliente actualizada
       return { ...state, customer: action.payload };
     default:
       return state;
@@ -89,7 +72,7 @@ function cartReducer(state: CartState, action: Action): CartState {
 
 const CartContext = createContext<{
   state: CartState;
-  dispatch: React.Dispatch<Action>;
+  dispatch: React.Dispatch<CartAction>;
 }>({
   state: initialState,
   dispatch: () => null,

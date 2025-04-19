@@ -86,3 +86,36 @@ model FramePrice {
 
   @@unique([width, height])
 }
+
+
+model Order {
+  id            String       @id @default(cuid())
+  sessionId     String       @unique
+  items         Json
+  customerInfo  Json
+  shippingInfo  Json?
+  amountTotal   Float
+  paymentStatus String
+  orderStatus   OrderStatus  // Enumeración
+  createdAt     DateTime     @default(now())
+  updatedAt     DateTime     @updatedAt
+
+  events        Event[]
+}
+
+model Event {
+  id          String       @id @default(cuid())
+  orderId     String
+  status      OrderStatus  // Enumeración
+  description String?
+  createdAt   DateTime     @default(now())
+
+  order       Order        @relation(fields: [orderId], references: [id])
+}
+
+enum OrderStatus {
+  PAID
+  PRODUCTION
+  SHIPPED
+  DELIVERED
+}

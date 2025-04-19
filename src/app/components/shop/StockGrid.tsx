@@ -58,8 +58,11 @@ export default function StockGrid() {
     const fetchArtworks = async () => {
       try {
         const response = await fetch('/api/stock');
+        console.log('STATUS:', response.status); // 🛠️
+        const data = await response.json();
+        console.log('DATA:', data); // 🛠️
         if (!response.ok) throw new Error(`Error ${response.status}: ${response.statusText}`);
-        setArtworks(await response.json());
+        setArtworks(data);
       } catch (err) {
         console.error('Fetch error:', err);
         setError(err instanceof Error ? err.message : 'Error desconocido');

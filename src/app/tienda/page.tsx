@@ -11,7 +11,7 @@ import CarritoCompra from '../components/cart/Carrito';
 import AddressSection from '../components/AddressSection';
 import { useCart } from '../../context/CartContext';
 import { Address } from '../../types/types'; // Ajusta la ruta según tu estructura
-
+import FadeSeparator from '../components/stylecomponents/FadeSeparator';
 
 const TiendaPage = () => {
     const [selectedTab, setSelectedTab] = useState<'originales' | 'replicas' | 'personalizado'>('originales');
@@ -42,6 +42,8 @@ const TiendaPage = () => {
                     backgroundPosition: 'center',
                 }}
             >
+                
+                
                 <div className={`absolute inset-0 bg-gradient-to-r from-[var(--primaryblue)] to-[var(--primary)] opacity-80`} />
                 
                 <div className="container mx-auto px-4 h-full flex items-center relative z-10">
@@ -80,6 +82,14 @@ const TiendaPage = () => {
     return (
         <div className="min-h-screen bg-[var(--background)]">
             <HeroSection />
+            <FadeSeparator
+        topColor="transparent"
+        bottomColor={{
+            light: "var(--background)",
+            dark: "var(--background)"
+          }}
+        height={50}
+      />
 
             <div className="container px-4 py-8 flex flex-col lg:flex-row gap-6 md:gap-8">
                 {/* Sección Lateral */}
