@@ -18,7 +18,7 @@ export async function sendOrderConfirmation(
   order: Order, // The created order object from Prisma
   items: CartItem[], // The items from the order metadata
   customer: CustomerInfo, // The customer info from the order metadata
-  address: Address | null // The address from the order metadata
+  address: Address | null // The address from the order metadat
 ) {
   // Basic validation to ensure we have a recipient email
   if (!customer.email) {
