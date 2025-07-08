@@ -6,6 +6,8 @@ export interface CartItem {
   name: string;
   price: number;
   quantity: number;
+  type: 'artwork' | 'stock_artwork';
+  imageUrl: string;
   metadata?: { // Optional metadata for the item, e.g., dimensions
     width: string;
     height: string;

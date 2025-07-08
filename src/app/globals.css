@@ -41,7 +41,12 @@
   --negative: #ffcccc; /* Color negativo en modo diurno (rosa claro) */
 }
 
-
+.tab-button {
+  @apply text-[var(--foreground)] hover:text-[var(--primary)] transition-colors;
+}
+.tab-button.active {
+  @apply text-[var(--primary)] border-b-2 border-[var(--primary)];
+}
 /* Configuración general del cuerpo */
 /* Estilos para el modo claro (por defecto) */
 /* Configuración general del cuerpo */

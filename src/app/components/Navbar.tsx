@@ -243,7 +243,7 @@ const Navbar: React.FC<NavbarProps> = ({ isMobileMenuOpen, toggleMobileMenu }) =
 
       {/* Carrito de Compras - Solución Key */}
       <div
-        className={`fixed top-16 right-0 h-[calc(100vh-4rem)] w-full md:w-96 z-[1000] ${
+        className={`fixed top-16 right-0 h-[calc(100vh-4rem)] w-full md:w-[460px] z-[1000] ${
           theme === "light" ? "bg-white" : "bg-gray-800"
         } transform transition-transform duration-300 shadow-xl ${
           isCartOpen ? "translate-x-0" : "translate-x-full"

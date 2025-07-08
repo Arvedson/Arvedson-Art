@@ -60,17 +60,46 @@ export default function ReplicaGrid() {
   const [itemsPerPage, setItemsPerPage] = useState(3);
   const [pageNumber, setPageNumber] = useState(0);
 
-  useEffect(() => {
-    const handleResize = () => {
-      if (window.innerWidth < 640) setItemsPerPage(1);
-      else if (window.innerWidth < 1024) setItemsPerPage(2);
-      else setItemsPerPage(3);
-      setPageNumber(0);
-    };
-    handleResize();
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
-  }, []);
+  // Nuevo estado para controlar la paginación responsiva
+  const [paginateConfig, setPaginateConfig] = useState({ 
+    marginPagesDisplayed: 0, 
+    pageRangeDisplayed: 0, 
+    showBreakLabel: false 
+  });
+
+useEffect(() => {
+    const handleResize = () => {
+      let newItemsPerPage;
+      let newPaginateConfig;
+
+      if (window.innerWidth < 640) {
+        newItemsPerPage = 1;
+        newPaginateConfig = { marginPagesDisplayed: 0, pageRangeDisplayed: 0, showBreakLabel: false }; 
+      } else if (window.innerWidth < 1024) {
+        newItemsPerPage = 2;
+        newPaginateConfig = { marginPagesDisplayed: 1, pageRangeDisplayed: 1, showBreakLabel: true };
+      } else {
+        newItemsPerPage = 3;
+        newPaginateConfig = { marginPagesDisplayed: 1, pageRangeDisplayed: 2, showBreakLabel: true };
+      }
+
+      // Only update if itemsPerPage has actually changed
+      if (newItemsPerPage !== itemsPerPage) {
+        setItemsPerPage(newItemsPerPage);
+        // Recalculate pageCount based on the new itemsPerPage
+        const newPageCount = Math.ceil(artworks.length / newItemsPerPage);
+        // If the current pageNumber is out of bounds for the new itemsPerPage, reset to 0
+        if (pageNumber >= newPageCount) {
+          setPageNumber(0);
+        }
+      }
+      setPaginateConfig(newPaginateConfig);
+    };
+
+    handleResize(); 
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, [itemsPerPage, pageNumber, artworks.length]); // Add dependencies to useEffect
 
   const pagesVisited = pageNumber * itemsPerPage;
   const displayedArtworks = artworks.slice(pagesVisited, pagesVisited + itemsPerPage);
@@ -179,33 +208,34 @@ export default function ReplicaGrid() {
             >
               &#10005;
             </button>
-            <Carousel 
-              showThumbs={false} 
-              dynamicHeight={true}
-              infiniteLoop={true}
-              useKeyboardArrows={true}
-            >
-              {[
-                <div key={`main-${selectedArtwork.id}`}>
-                  <img 
-                    src={selectedArtwork.mainImageUrl} 
-                    alt={selectedArtwork.title} 
-                    className="bg-[var(--secondary)]"
-                    onError={(e) => (e.target as HTMLImageElement).src = '/placeholder-artwork.jpg'}
-                  />
-                </div>,
-                ...(selectedArtwork.subImages?.map((sub) => (
-                  <div key={sub.imageUrl}>
-                    <img 
-                      src={sub.imageUrl} 
-                      alt={`${selectedArtwork.title} - subimagen`} 
-                      className="bg-[var(--secondary)]"
-                      onError={(e) => (e.target as HTMLImageElement).src = '/placeholder-artwork.jpg'}
-                    />
-                  </div>
-                )) ?? [])
-              ]}
-            </Carousel>
+<Carousel 
+  showThumbs={false} 
+  dynamicHeight={false}
+  infiniteLoop={true}
+  useKeyboardArrows={true}
+  className="max-w-full max-h-screen"
+>
+  {[
+    <div key={`main-${selectedArtwork.id}`} className="flex justify-center items-center h-1 max-h-screen">
+      <img 
+        src={selectedArtwork.mainImageUrl} 
+        alt={selectedArtwork.title} 
+        className="max-w-full max-h-full object-contain bg-[var(--secondary)]"
+        onError={(e) => (e.target as HTMLImageElement).src = '/placeholder-artwork.jpg'}
+      />
+    </div>,
+    ...(selectedArtwork.subImages?.map((sub) => (
+      <div key={sub.imageUrl} className="flex justify-center items-center h-screen max-h-screen">
+        <img 
+          src={sub.imageUrl} 
+          alt={`${selectedArtwork.title} - subimagen`} 
+          className="max-w-full max-h-full object-contain bg-[var(--secondary)]"
+          onError={(e) => (e.target as HTMLImageElement).src = '/placeholder-artwork.jpg'}
+        />
+      </div>
+    )) ?? [])
+  ]}
+</Carousel>
           </div>
         </div>
       )}
@@ -316,13 +346,13 @@ export default function ReplicaGrid() {
         })}
       </motion.div>
 
-      <div className="mt-6">
+      <div className="mt-6 overflow-x-auto"> {/* Añadimos overflow-x-auto aquí */}
         <ReactPaginate
           previousLabel={"Anterior"}
           nextLabel={"Siguiente"}
           pageCount={pageCount}
           onPageChange={changePage}
-          containerClassName={"flex justify-center list-none gap-2"}
+          containerClassName={"flex justify-center flex-wrap list-none gap-2 min-w-0"} 
           pageClassName={"inline-block"}
           pageLinkClassName={
             "px-3 py-1 border border-[var(--border)] rounded hover:bg-[var(--secondary)] transition-colors text-[var(--muted2)]"
@@ -335,8 +365,13 @@ export default function ReplicaGrid() {
           }
           activeLinkClassName={"bg-[var(--primary)] text-[var(--white)] hover:bg-[var(--primary)]"}
           disabledLinkClassName={"opacity-50 cursor-not-allowed hover:bg-transparent text-[var(--muted)]"}
-          marginPagesDisplayed={1}
-          pageRangeDisplayed={2}
+          
+          // Props ajustados dinámicamente y el nuevo breakLabel
+          marginPagesDisplayed={paginateConfig.marginPagesDisplayed}
+          pageRangeDisplayed={paginateConfig.pageRangeDisplayed}
+          breakLabel={paginateConfig.showBreakLabel ? "..." : null} 
+          breakClassName={"break-me"} 
+          breakLinkClassName={"page-link"}
         />
       </div>
     </>
@@ -370,6 +405,7 @@ export default function ReplicaGrid() {
         name: artwork.title,
         price: price,
         quantity: 1, 
+        type: 'artwork', 
         metadata: {
           width: currentDimensions.width,
           height: currentDimensions.height

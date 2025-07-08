@@ -2,7 +2,7 @@
 import { NextResponse } from 'next/server';
 import Stripe from 'stripe';
 import { PrismaClient } from '@prisma/client';
-import { sendOrderConfirmation } from '@/utils/email'; // MODIFICADO: importamos la función de envío de correo
+import { sendOrderConfirmation } from '@/utils/email';
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
   apiVersion: '2025-02-24.acacia',
@@ -27,20 +27,15 @@ export async function POST(req: Request) {
     console.log('✅ Evento Stripe verificado:', event.type);
     console.log('Detalles completos del evento:', JSON.stringify(event, null, 2));
 
-    // Manejar diferentes tipos de eventos
     switch (event.type) {
       case 'payment_intent.succeeded':
         console.log('💰 Pago exitoso (PaymentIntent)!');
         const paymentIntent = event.data.object as Stripe.PaymentIntent;
-        // Call the handler for successful Payment Intents
         await handlePaymentIntentSucceeded(paymentIntent);
         break;
 
       case 'charge.succeeded':
         console.log('🔌 Cargo exitoso (Charge):', event.data.object.id);
-        // Optionally handle charge.succeeded if needed, but payment_intent.succeeded
-        // is generally preferred for order fulfillment workflows.
-        // If you only rely on payment_intent.succeeded, you can just log here.
         console.warn('⚠️ Received charge.succeeded event. Order creation is tied to payment_intent.succeeded.');
         break;
 
@@ -67,45 +62,72 @@ async function handlePaymentIntentSucceeded(paymentIntent: Stripe.PaymentIntent)
     console.log('📦 Iniciando creación de orden a partir de PaymentIntent...');
     console.log('PaymentIntent ID:', paymentIntent.id);
 
-    // Retrieve the full PaymentIntent object to ensure we have all metadata
     const fullPaymentIntent = await stripe.paymentIntents.retrieve(paymentIntent.id);
 
-    console.log('Fetched PaymentIntent Metadata:', fullPaymentIntent.metadata); // Log the metadata from the fetched object
+    console.log('Fetched PaymentIntent Metadata:', fullPaymentIntent.metadata);
 
-    // Parse data from the metadata of the fetched PaymentIntent
     const items = parseMetadata(fullPaymentIntent.metadata.items, 'items');
     const customer = parseMetadata(fullPaymentIntent.metadata.customer, 'customer');
     const address = parseMetadata(fullPaymentIntent.metadata.address, 'address');
 
-    console.log('📝 Datos parseados (desde PaymentIntent) - Items:', items); // Added specific log for items
-    console.log('📝 Datos parseados (desde PaymentIntent) - Customer:', customer); // Added specific log for customer
-    console.log('📝 Datos parseados (desde PaymentIntent) - Address:', address); // Added specific log for address
+    console.log('📝 Datos parseados - Items:', items);
+    console.log('📝 Datos parseados - Customer:', customer);
+    console.log('📝 Datos parseados - Address:', address);
 
-    // Validar datos esenciales
-    if (!items || !customer) {
-      console.error('❌ Datos incompletos en metadata del PaymentIntent para crear orden.'); // More specific error
-      throw new Error('Datos incompletos en metadata del PaymentIntent');
+    if (!items || !Array.isArray(items) || !customer) {
+      console.error('❌ Datos incompletos o formato incorrecto en metadata');
+      throw new Error('Datos incompletos o formato inválido en metadata');
     }
 
-    // Crear orden en base de datos
-    console.log('Attempting to create order in database with data:', { // Log before database write
-      sessionId: fullPaymentIntent.id, // Use ID from fetched object
-      items: items,
-      customerInfo: {
-        name: customer.name || 'No especificado',
-        email: customer.email || 'No especificado',
-        phone: customer.phone || 'No especificado',
-      },
-      shippingInfo: address ? address : null, // Ensure address is null if parsing failed or it was not provided
-      amountTotal: fullPaymentIntent.amount / 100, // Use amount from fetched object
-      paymentStatus: fullPaymentIntent.status, // Use status from fetched object
-      orderStatus: 'PAID',
-    });
+    // Obtener información real de los productos desde la DB
+    console.log('🔍 Buscando productos en base de datos para enriquecer items...');
+
+const enrichedItems = await Promise.all(
+  items.map(async (item: any) => {
+    let product;
+
+    if (item.type === 'stock_artwork') {
+      console.log(`🔎 Buscando StockArtwork con ID: ${item.id}`);
+      product = await prisma.stockArtwork.findUnique({
+        where: { id: item.id },
+      });
+    } else {
+      console.log(`🔎 Buscando Artwork con ID: ${item.id}`);
+      product = await prisma.artwork.findUnique({
+        where: { id: item.id },
+      });
+    }
+
+    if (!product) {
+      console.warn(`🚫 Producto no encontrado: ID=${item.id}, Tipo=${item.type}`);
+      return null;
+    }
+
+    console.log(`✅ Producto encontrado: ${product.title} | URL: ${product.mainImageUrl}`);
+
+    return {
+      ...item,
+      imageUrl: product.mainImageUrl,
+    };
+  })
+);
+
+    const validItems = enrichedItems.filter(Boolean);
+
+    if (validItems.length === 0) {
+      console.error('❌ No se encontró ningún producto válido en la base de datos');
+      throw new Error('No se encontró ningún producto válido');
+    }
+
+    console.log('🖼️ Items enriquecidos con imagen:', validItems);
+
+    // Crear orden en la base de datos
+    console.log('💾 Guardando orden en la base de datos...');
 
     const order = await prisma.order.create({
       data: {
         sessionId: fullPaymentIntent.id,
-        items: items,
+        items: validItems,
         customerInfo: {
           name: customer.name || 'No especificado',
           email: customer.email || 'No especificado',
@@ -118,10 +140,9 @@ async function handlePaymentIntentSucceeded(paymentIntent: Stripe.PaymentIntent)
       },
     });
 
-    console.log('🎉 Orden creada exitosamente:', order);
-    console.log('ID de orden:', order.id);
+    console.log('🎉 Orden creada exitosamente:', order.id);
 
-    // Crear evento asociado
+    // Registrar evento asociado
     const orderEvent = await prisma.event.create({
       data: {
         orderId: order.id,
@@ -130,14 +151,15 @@ async function handlePaymentIntentSucceeded(paymentIntent: Stripe.PaymentIntent)
       },
     });
 
-    console.log('📌 Evento de orden creado:', orderEvent);
+    console.log('📌 Evento de orden creado:', orderEvent.id);
 
-    // MODIFICADO: Envío de correo de confirmación tras crear la orden
-    await sendOrderConfirmation(order, items, customer, address);
+    // Enviar correo de confirmación
+    console.log('✉️ Enviando correo de confirmación...');
+    await sendOrderConfirmation(order, validItems, customer, address);
+    console.log('✅ Correo de confirmación enviado.');
 
   } catch (error) {
     console.error('❌ Error al crear orden:', error);
-    // Re-throw the error to be caught by the main webhook handler
     throw error;
   }
 }
@@ -145,15 +167,14 @@ async function handlePaymentIntentSucceeded(paymentIntent: Stripe.PaymentIntent)
 function parseMetadata(rawData: string | undefined, fieldName: string) {
   try {
     if (!rawData) {
-      console.warn(`⚠️ Metadata ${fieldName} no encontrado o vacío.`); // Updated warning
+      console.warn(`⚠️ Metadata ${fieldName} no encontrado o vacío.`);
       return null;
     }
-    // Attempt to parse the JSON string
     const parsedData = JSON.parse(rawData);
-    console.log(`✅ Metadata ${fieldName} parseada exitosamente.`); // Added success log
+    console.log(`✅ Metadata ${fieldName} parseada exitosamente.`);
     return parsedData;
   } catch (error) {
-    console.error(`❌ Error parseando ${fieldName}:`, rawData, 'Error:', error); // Added error object to log
+    console.error(`❌ Error parseando ${fieldName}:`, rawData, 'Error:', error);
     return null;
   }
 }

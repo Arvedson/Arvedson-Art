@@ -1,109 +1,116 @@
-// src/utils/email.ts
 import nodemailer from 'nodemailer';
-import { Order } from '@prisma/client'; // Import Order type from Prisma
-import { CartItem, CustomerInfo, Address } from '@/types/cart'; // Import types from your cart types file
+import { Order } from '@prisma/client';
+import { CartItem, CustomerInfo, Address } from '@/types/cart';
 
-// Configure the Nodemailer transporter
-// Use environment variables for sensitive information
+// Configura el transportador de correo
 const transporter = nodemailer.createTransport({
-  service: 'gmail', // Or your SMTP service
+  service: 'gmail',
   auth: {
-    user: process.env.SMTP_USER, // Your email address from .env
-    pass: process.env.SMTP_PASS, // Your email password or app-specific password from .env
+    user: process.env.SMTP_USER,
+    pass: process.env.SMTP_PASS,
   },
 });
 
-// Function to send the order confirmation email
+/**
+ * Envia un correo de confirmación de pedido con imágenes incluidas
+ */
 export async function sendOrderConfirmation(
-  order: Order, // The created order object from Prisma
-  items: CartItem[], // The items from the order metadata
-  customer: CustomerInfo, // The customer info from the order metadata
-  address: Address | null // The address from the order metadat
+  order: Order,
+  items: CartItem[],
+  customer: CustomerInfo,
+  address: Address | null
 ) {
-  // Basic validation to ensure we have a recipient email
   if (!customer.email) {
-    console.error('❌ No customer email provided for order confirmation email.');
-    return; // Exit if no email is available
+    console.error('❌ No se proporcionó un correo para el cliente');
+    return;
   }
 
-  // Construct the order status URL
-  // Assuming your order status page is at /order/[id]
-  // You might need to adjust the base URL for production
+  // URL del estado del pedido
   const orderStatusUrl = `${process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'}/order/${order.id}`;
 
-  // Build the email content (HTML)
+  // Generar el cuerpo del correo con estilo profesional
   let emailBody = `
-    <h1>Confirmación de tu compra</h1>
-    <p>Gracias por tu pedido, ${customer.name || 'Cliente'}!</p>
-    <p>Tu número de pedido es: <strong>${order.id}</strong></p>
-    <p>Puedes ver el estado de tu pedido aquí: <a href="${orderStatusUrl}">${orderStatusUrl}</a></p>
+    <div style="font-family: Arial, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: auto; border: 1px solid #eee; border-radius: 8px; padding: 20px;">
+      <h1 style="color: #2c3e50; border-bottom: 2px solid #3498db; padding-bottom: 10px;">Confirmación de tu compra</h1>
+      <p>Hola <strong>${customer.name || 'Cliente'}</strong>,</p>
+      <p>Gracias por tu pedido. Tu número de pedido es: <strong>${order.id}</strong></p>
+      <p>Puedes revisar el estado de tu pedido en cualquier momento aquí: 
+        <a href="${orderStatusUrl}" style="color: #3498db; text-decoration: none;">${orderStatusUrl}</a>
+      </p>
 
-    <h2>Resumen del Pedido:</h2>
-    <ul>
+      <h2 style="color: #2c3e50;">Resumen del Pedido</h2>
+      <table style="width: 100%; border-collapse: collapse; margin-bottom: 20px;">
+        <thead>
+          <tr style="background-color: #f2f2f2;">
+            <th style="padding: 10px; border: 1px solid #ddd;">Producto</th>
+            <th style="padding: 10px; border: 1px solid #ddd;">Cantidad</th>
+            <th style="padding: 10px; border: 1px solid #ddd;">Precio</th>
+          </tr>
+        </thead>
+        <tbody>
   `;
 
-  // Add items to the email body
+  // Agregar cada producto con imagen
   items.forEach(item => {
-    emailBody += `<li>${item.name} (x${item.quantity}) - $${(item.price * item.quantity).toFixed(2)}</li>`;
+    emailBody += `
+      <tr>
+        <td style="padding: 10px; border: 1px solid #ddd;">
+          ${item.imageUrl ? `<img src="${item.imageUrl}" alt="${item.name}" style="max-width: 100px; border-radius: 4px; margin-bottom: 10px;" />` : ''}
+          <br><strong>${item.name}</strong>
+        </td>
+        <td style="padding: 10px; border: 1px solid #ddd;">x${item.quantity}</td>
+        <td style="padding: 10px; border: 1px solid #ddd;">$${(item.price * item.quantity).toFixed(2)}</td>
+      </tr>
+    `;
   });
 
-  emailBody += `</ul>
-    <p><strong>Total: $${order.amountTotal.toFixed(2)}</strong></p>
+  emailBody += `
+        </tbody>
+        <tfoot>
+          <tr>
+            <td colspan="2" style="text-align: right; padding: 10px; border: 1px solid #ddd;"><strong>Total:</strong></td>
+            <td style="padding: 10px; border: 1px solid #ddd;"><strong>$${order.amountTotal.toFixed(2)}</strong></td>
+          </tr>
+        </tfoot>
+      </table>
   `;
 
-  // Add shipping address if available
+  // Dirección de envío
   if (address?.formattedAddress) {
     emailBody += `
-      <h2>Dirección de Envío:</h2>
+      <h2 style="color: #2c3e50;">Dirección de Envío</h2>
       <p>${address.formattedAddress}</p>
     `;
   }
 
-  // Add customer contact info
+  // Datos de contacto
   emailBody += `
-    <h2>Datos de Contacto:</h2>
-    <p>Nombre: ${customer.name || 'No especificado'}</p>
-    <p>Email: ${customer.email || 'No especificado'}</p>
-    <p>Teléfono: ${customer.phone || 'No especificado'}</p>
+      <h2 style="color: #2c3e50;">Datos de Contacto</h2>
+      <ul style="list-style: none; padding: 0;">
+        <li><strong>Nombre:</strong> ${customer.name || 'No especificado'}</li>
+        <li><strong>Email:</strong> ${customer.email || 'No especificado'}</li>
+        <li><strong>Teléfono:</strong> ${customer.phone || 'No especificado'}</li>
+      </ul>
+
+      <p style="margin-top: 30px; font-size: 0.9em; color: #777; border-top: 1px solid #eee; padding-top: 15px;">
+        Este correo fue generado automáticamente. Por favor no respondas directamente a este mensaje.
+      </p>
+    </div>
   `;
 
-  // Define email options
+  // Configuración del correo
   const mailOptions = {
-    from: process.env.SMTP_USER, // Sender address (should ideally be a domain email)
-    to: customer.email, // Recipient email
-    subject: `Confirmación de Pedido #${order.id}`, // Email subject
-    html: emailBody, // Email body in HTML format
-    // text: 'Plain text version of the email' // Optional: plain text alternative
+    from: `"Arvedson Art" <${process.env.SMTP_USER}>`,
+    to: customer.email,
+    subject: `✅ Pedido Confirmado #${order.id} - Arvedson Art`,
+    html: emailBody,
   };
 
-  // Send the email
   try {
-    console.log(`Attempting to send order confirmation email to ${customer.email}`);
+    console.log(`📧 Enviando correo de confirmación a ${customer.email}`);
     const info = await transporter.sendMail(mailOptions);
-    console.log('✅ Email sent successfully:', info.response);
+    console.log('✅ Correo enviado exitosamente:', info.response);
   } catch (error) {
-    console.error('❌ Error sending email:', error);
-    // In a production environment, you might want to log this error to a monitoring system
-    // or implement a retry mechanism here.
+    console.error('❌ Error al enviar el correo:', error);
   }
 }
-
-// Helper function to parse metadata (copied from webhook, ensure consistency)
-// This is included here for completeness if needed elsewhere, but the webhook
-// handler already parses the metadata before calling sendOrderConfirmation.
-/*
-function parseMetadata(rawData: string | undefined, fieldName: string) {
-  try {
-    if (!rawData) {
-      console.warn(`⚠️ Metadata ${fieldName} no encontrado o vacío.`);
-      return null;
-    }
-    const parsedData = JSON.parse(rawData);
-    console.log(`✅ Metadata ${fieldName} parseada exitosamente.`);
-    return parsedData;
-  } catch (error) {
-    console.error(`❌ Error parseando ${fieldName}:`, rawData, 'Error:', error);
-    return null;
-  }
-}
-*/
