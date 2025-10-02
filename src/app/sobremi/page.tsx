@@ -1,21 +1,12 @@
-"use client"
-import React from 'react';
-import AboutMe from "../components/AboutMe"
-import useTheme from '@/hooks/useTheme';
-
+"use client";
+import React from "react";
+import AboutMe from "../components/AboutMe";
 const SobreMiPage = () => {
-    const theme = useTheme();
-
-
-    return (
-        <div
-            className={`min-h-screen ${
-                theme === 'light' ? 'bg-[var(--background)] text-[var(--foreground)]' : 'bg-gray-900 text-gray-100'
-            }`}
-        >
-            <AboutMe />
-        </div>
-    );
+  return (
+    <div className="min-h-screen bg-[var(--background)] text-[var(--foreground)]">
+      <AboutMe />
+    </div>
+  );
 };
 
 export default SobreMiPage;

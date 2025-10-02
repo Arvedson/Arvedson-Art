@@ -6,26 +6,42 @@ import TestimonialsAdmin from "@/app/components/TestimonialsAdmin";
 import StockGallery from "@/app/components/StockGallery ";
 import UploadStockArtwork from "@/app/components/UploadStockArtwork ";
 import FrameCost from "@/app/components/shop/FrameCost";
+import useTheme from "@/hooks/useTheme";
 
 export default function AdminPage() {
   const [activeTab, setActiveTab] = useState<
     "upload" | "gallery" | "testimonials" | "stock" | "prices"
   >("upload");
-  const [activeForm, setActiveForm] = useState<"artwork" | "stock" | "testimonial">("artwork");
+  const [activeForm, setActiveForm] = useState<
+    "artwork" | "stock" | "testimonial"
+  >("artwork");
+  const theme = useTheme();
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div
+      className={`min-h-screen ${
+        theme === "dark" ? "bg-[var(--background)]" : "bg-[var(--primary-bg)]"
+      }`}
+    >
       <div className="container mx-auto px-4 py-8">
-        <h1 className="text-3xl font-bold text-gray-800 mb-8 text-center">Panel de Administración</h1>
-        
+        <h1
+          className={`text-3xl font-bold mb-8 text-center ${
+            theme === "dark"
+              ? "text-[var(--foreground)]"
+              : "text-[var(--foreground)]"
+          }`}
+        >
+          Panel de Administración
+        </h1>
+
         {/* Navegación principal actualizada */}
         <div className="flex flex-wrap justify-center gap-4 mb-8">
           <button
             onClick={() => setActiveTab("upload")}
             className={`px-6 py-2 rounded-md font-medium transition-colors ${
               activeTab === "upload"
-                ? "bg-indigo-600 text-white"
-                : "bg-gray-200 text-gray-800 hover:bg-gray-300"
+                ? "bg-[var(--primary)] text-[var(--text-on-primary)]"
+                : "bg-[var(--card)] text-[var(--foreground)] hover:bg-[var(--secondary)] border border-[var(--border)]"
             }`}
           >
             Subir Contenido
@@ -34,8 +50,8 @@ export default function AdminPage() {
             onClick={() => setActiveTab("gallery")}
             className={`px-6 py-2 rounded-md font-medium transition-colors ${
               activeTab === "gallery"
-                ? "bg-indigo-600 text-white"
-                : "bg-gray-200 text-gray-800 hover:bg-gray-300"
+                ? "bg-[var(--primary)] text-[var(--text-on-primary)]"
+                : "bg-[var(--card)] text-[var(--foreground)] hover:bg-[var(--secondary)] border border-[var(--border)]"
             }`}
           >
             Galería de Réplicas
@@ -44,8 +60,8 @@ export default function AdminPage() {
             onClick={() => setActiveTab("stock")}
             className={`px-6 py-2 rounded-md font-medium transition-colors ${
               activeTab === "stock"
-                ? "bg-indigo-600 text-white"
-                : "bg-gray-200 text-gray-800 hover:bg-gray-300"
+                ? "bg-[var(--primary)] text-[var(--text-on-primary)]"
+                : "bg-[var(--card)] text-[var(--foreground)] hover:bg-[var(--secondary)] border border-[var(--border)]"
             }`}
           >
             Cuadros en Stock
@@ -54,8 +70,8 @@ export default function AdminPage() {
             onClick={() => setActiveTab("testimonials")}
             className={`px-6 py-2 rounded-md font-medium transition-colors ${
               activeTab === "testimonials"
-                ? "bg-indigo-600 text-white"
-                : "bg-gray-200 text-gray-800 hover:bg-gray-300"
+                ? "bg-[var(--primary)] text-[var(--text-on-primary)]"
+                : "bg-[var(--card)] text-[var(--foreground)] hover:bg-[var(--secondary)] border border-[var(--border)]"
             }`}
           >
             Testimonios
@@ -64,8 +80,8 @@ export default function AdminPage() {
             onClick={() => setActiveTab("prices")}
             className={`px-6 py-2 rounded-md font-medium transition-colors ${
               activeTab === "prices"
-                ? "bg-indigo-600 text-white"
-                : "bg-gray-200 text-gray-800 hover:bg-gray-300"
+                ? "bg-[var(--primary)] text-[var(--text-on-primary)]"
+                : "bg-[var(--card)] text-[var(--foreground)] hover:bg-[var(--secondary)] border border-[var(--border)]"
             }`}
           >
             Gestión de Precios
@@ -73,42 +89,48 @@ export default function AdminPage() {
         </div>
 
         {/* Contenido actualizado con la nueva sección */}
-        <div className="bg-white rounded-lg shadow-md p-6">
+        <div
+          className={`rounded-lg shadow-md p-6 border ${
+            theme === "dark"
+              ? "bg-[var(--card)] border-[var(--border)]"
+              : "bg-[var(--card)] border-[var(--border)]"
+          }`}
+        >
           {activeTab === "upload" && (
             <div>
               <div className="flex justify-center gap-4 mb-6">
                 <button
                   onClick={() => setActiveForm("artwork")}
-                  className={`px-4 py-2 rounded-md font-medium ${
+                  className={`px-4 py-2 rounded-md font-medium transition-colors ${
                     activeForm === "artwork"
-                      ? "bg-indigo-600 text-white"
-                      : "bg-gray-200 text-gray-800 hover:bg-gray-300"
+                      ? "bg-[var(--primary)] text-[var(--text-on-primary)]"
+                      : "bg-[var(--secondary)] text-[var(--foreground)] hover:bg-[var(--muted)] border border-[var(--border)]"
                   }`}
                 >
                   Subir Réplica
                 </button>
                 <button
                   onClick={() => setActiveForm("stock")}
-                  className={`px-4 py-2 rounded-md font-medium ${
+                  className={`px-4 py-2 rounded-md font-medium transition-colors ${
                     activeForm === "stock"
-                      ? "bg-indigo-600 text-white"
-                      : "bg-gray-200 text-gray-800 hover:bg-gray-300"
+                      ? "bg-[var(--primary)] text-[var(--text-on-primary)]"
+                      : "bg-[var(--secondary)] text-[var(--foreground)] hover:bg-[var(--muted)] border border-[var(--border)]"
                   }`}
                 >
                   Subir Stock
                 </button>
                 <button
                   onClick={() => setActiveForm("testimonial")}
-                  className={`px-4 py-2 rounded-md font-medium ${
+                  className={`px-4 py-2 rounded-md font-medium transition-colors ${
                     activeForm === "testimonial"
-                      ? "bg-indigo-600 text-white"
-                      : "bg-gray-200 text-gray-800 hover:bg-gray-300"
+                      ? "bg-[var(--primary)] text-[var(--text-on-primary)]"
+                      : "bg-[var(--secondary)] text-[var(--foreground)] hover:bg-[var(--muted)] border border-[var(--border)]"
                   }`}
                 >
                   Subir Testimonio
                 </button>
               </div>
-              
+
               {activeForm === "artwork" && <UploadArtwork />}
               {activeForm === "stock" && <UploadStockArtwork />}
               {activeForm === "testimonial" && <UploadTestimonial />}
@@ -120,7 +142,15 @@ export default function AdminPage() {
           {activeTab === "testimonials" && <TestimonialsAdmin />}
           {activeTab === "prices" && (
             <div className="space-y-6">
-              <h2 className="text-2xl font-semibold text-gray-800">Gestión de Precios de Marcos</h2>
+              <h2
+                className={`text-2xl font-semibold ${
+                  theme === "dark"
+                    ? "text-[var(--foreground)]"
+                    : "text-[var(--foreground)]"
+                }`}
+              >
+                Gestión de Precios de Marcos
+              </h2>
               <FrameCost />
             </div>
           )}
@@ -135,8 +165,11 @@ function UploadTestimonial() {
     testimonial: "",
     rating: "",
   });
+  const theme = useTheme();
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
   };
@@ -164,7 +197,14 @@ function UploadTestimonial() {
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
       <div>
-        <label htmlFor="name" className="block text-sm font-medium text-gray-700">
+        <label
+          htmlFor="name"
+          className={`block text-sm font-medium ${
+            theme === "dark"
+              ? "text-[var(--foreground)]"
+              : "text-[var(--foreground)]"
+          }`}
+        >
           Nombre
         </label>
         <input
@@ -174,13 +214,20 @@ function UploadTestimonial() {
           placeholder="Nombre del cliente"
           value={formData.name}
           onChange={handleChange}
-          className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+          className={`mt-1 block w-full rounded-md shadow-sm sm:text-sm border-[var(--border)] bg-[var(--card)] text-[var(--foreground)] placeholder-[var(--muted2)] focus:border-[var(--primary)] focus:ring-[var(--primary)]`}
           required
         />
       </div>
 
       <div>
-        <label htmlFor="testimonial" className="block text-sm font-medium text-gray-700">
+        <label
+          htmlFor="testimonial"
+          className={`block text-sm font-medium ${
+            theme === "dark"
+              ? "text-[var(--foreground)]"
+              : "text-[var(--foreground)]"
+          }`}
+        >
           Testimonio
         </label>
         <textarea
@@ -190,13 +237,20 @@ function UploadTestimonial() {
           value={formData.testimonial}
           onChange={handleChange}
           rows={4}
-          className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+          className={`mt-1 block w-full rounded-md shadow-sm sm:text-sm border-[var(--border)] bg-[var(--card)] text-[var(--foreground)] placeholder-[var(--muted2)] focus:border-[var(--primary)] focus:ring-[var(--primary)]`}
           required
         />
       </div>
 
       <div>
-        <label htmlFor="rating" className="block text-sm font-medium text-gray-700">
+        <label
+          htmlFor="rating"
+          className={`block text-sm font-medium ${
+            theme === "dark"
+              ? "text-[var(--foreground)]"
+              : "text-[var(--foreground)]"
+          }`}
+        >
           Calificación (1 a 5)
         </label>
         <input
@@ -208,14 +262,14 @@ function UploadTestimonial() {
           onChange={handleChange}
           min={1}
           max={5}
-          className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+          className={`mt-1 block w-full rounded-md shadow-sm sm:text-sm border-[var(--border)] bg-[var(--card)] text-[var(--foreground)] placeholder-[var(--muted2)] focus:border-[var(--primary)] focus:ring-[var(--primary)]`}
           required
         />
       </div>
 
       <button
         type="submit"
-        className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+        className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-[var(--text-on-primary)] bg-[var(--primary)] hover:bg-[var(--accent)] focus:outline-none focus:ring-2 focus:ring-[var(--primary)] transition-colors"
       >
         Subir Testimonio
       </button>

@@ -1,5 +1,6 @@
 "use client";
 import { useState } from "react";
+import useTheme from "@/hooks/useTheme";
 
 interface FormValues {
   title: string;
@@ -23,6 +24,7 @@ export default function UploadArtwork() {
   const [subImages, setSubImages] = useState<File[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const theme = useTheme();
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
@@ -49,8 +51,15 @@ export default function UploadArtwork() {
     setIsSubmitting(true);
     setError(null);
 
-    if (!formData.title || !formData.description || !formData.order || !mainImage) {
-      setError("Todos los campos son obligatorios y debe seleccionar una imagen principal.");
+    if (
+      !formData.title ||
+      !formData.description ||
+      !formData.order ||
+      !mainImage
+    ) {
+      setError(
+        "Todos los campos son obligatorios y debe seleccionar una imagen principal."
+      );
       setIsSubmitting(false);
       return;
     }
@@ -99,19 +108,32 @@ export default function UploadArtwork() {
         console.error("Error desconocido:", error);
       }
     }
-    
   };
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
       {error && (
-        <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative" role="alert">
+        <div
+          className={`border px-4 py-3 rounded relative ${
+            theme === "dark"
+              ? "bg-[var(--negative)]/20 border-[var(--negative)] text-[var(--negative)]"
+              : "bg-red-100 border-red-400 text-red-700"
+          }`}
+          role="alert"
+        >
           <strong className="font-bold">Error: </strong>
           <span className="block sm:inline">{error}</span>
         </div>
       )}
       <div>
-        <label htmlFor="title" className="block text-sm font-medium text-gray-700">
+        <label
+          htmlFor="title"
+          className={`block text-sm font-medium ${
+            theme === "dark"
+              ? "text-[var(--foreground)]"
+              : "text-[var(--foreground)]"
+          }`}
+        >
           Título
         </label>
         <input
@@ -121,12 +143,19 @@ export default function UploadArtwork() {
           placeholder="Título del cuadro"
           value={formData.title}
           onChange={handleChange}
-          className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+          className={`mt-1 block w-full rounded-md shadow-sm sm:text-sm border-[var(--border)] bg-[var(--card)] text-[var(--foreground)] placeholder-[var(--muted2)] focus:border-[var(--primary)] focus:ring-[var(--primary)]`}
           required
         />
       </div>
       <div>
-        <label htmlFor="description" className="block text-sm font-medium text-gray-700">
+        <label
+          htmlFor="description"
+          className={`block text-sm font-medium ${
+            theme === "dark"
+              ? "text-[var(--foreground)]"
+              : "text-[var(--foreground)]"
+          }`}
+        >
           Descripción
         </label>
         <textarea
@@ -136,12 +165,19 @@ export default function UploadArtwork() {
           value={formData.description}
           onChange={handleChange}
           rows={4}
-          className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+          className={`mt-1 block w-full rounded-md shadow-sm sm:text-sm border-[var(--border)] bg-[var(--card)] text-[var(--foreground)] placeholder-[var(--muted2)] focus:border-[var(--primary)] focus:ring-[var(--primary)]`}
           required
         />
       </div>
       <div>
-        <label htmlFor="medidas" className="block text-sm font-medium text-gray-700">
+        <label
+          htmlFor="medidas"
+          className={`block text-sm font-medium ${
+            theme === "dark"
+              ? "text-[var(--foreground)]"
+              : "text-[var(--foreground)]"
+          }`}
+        >
           Medidas
         </label>
         <input
@@ -151,12 +187,19 @@ export default function UploadArtwork() {
           placeholder="Ej: 120*300"
           value={formData.medidas}
           onChange={handleChange}
-          className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+          className={`mt-1 block w-full rounded-md shadow-sm sm:text-sm border-[var(--border)] bg-[var(--card)] text-[var(--foreground)] placeholder-[var(--muted2)] focus:border-[var(--primary)] focus:ring-[var(--primary)]`}
           required
         />
       </div>
       <div>
-        <label htmlFor="tecnica" className="block text-sm font-medium text-gray-700">
+        <label
+          htmlFor="tecnica"
+          className={`block text-sm font-medium ${
+            theme === "dark"
+              ? "text-[var(--foreground)]"
+              : "text-[var(--foreground)]"
+          }`}
+        >
           Técnica
         </label>
         <input
@@ -166,12 +209,19 @@ export default function UploadArtwork() {
           placeholder="Ej: Óleo sobre lienzo"
           value={formData.tecnica}
           onChange={handleChange}
-          className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+          className={`mt-1 block w-full rounded-md shadow-sm sm:text-sm border-[var(--border)] bg-[var(--card)] text-[var(--foreground)] placeholder-[var(--muted2)] focus:border-[var(--primary)] focus:ring-[var(--primary)]`}
           required
         />
       </div>
       <div>
-        <label htmlFor="marco" className="block text-sm font-medium text-gray-700">
+        <label
+          htmlFor="marco"
+          className={`block text-sm font-medium ${
+            theme === "dark"
+              ? "text-[var(--foreground)]"
+              : "text-[var(--foreground)]"
+          }`}
+        >
           Marco
         </label>
         <input
@@ -181,12 +231,19 @@ export default function UploadArtwork() {
           placeholder="Ej: Con marco de madera"
           value={formData.marco}
           onChange={handleChange}
-          className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+          className={`mt-1 block w-full rounded-md shadow-sm sm:text-sm border-[var(--border)] bg-[var(--card)] text-[var(--foreground)] placeholder-[var(--muted2)] focus:border-[var(--primary)] focus:ring-[var(--primary)]`}
           required
         />
       </div>
       <div>
-        <label htmlFor="order" className="block text-sm font-medium text-gray-700">
+        <label
+          htmlFor="order"
+          className={`block text-sm font-medium ${
+            theme === "dark"
+              ? "text-[var(--foreground)]"
+              : "text-[var(--foreground)]"
+          }`}
+        >
           Orden
         </label>
         <input
@@ -196,12 +253,19 @@ export default function UploadArtwork() {
           placeholder="No de cuadro mostrado"
           value={formData.order}
           onChange={handleChange}
-          className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+          className={`mt-1 block w-full rounded-md shadow-sm sm:text-sm border-[var(--border)] bg-[var(--card)] text-[var(--foreground)] placeholder-[var(--muted2)] focus:border-[var(--primary)] focus:ring-[var(--primary)]`}
           required
         />
       </div>
       <div>
-        <label htmlFor="mainImage" className="block text-sm font-medium text-gray-700">
+        <label
+          htmlFor="mainImage"
+          className={`block text-sm font-medium ${
+            theme === "dark"
+              ? "text-[var(--foreground)]"
+              : "text-[var(--foreground)]"
+          }`}
+        >
           Imagen Principal
         </label>
         <input
@@ -209,19 +273,32 @@ export default function UploadArtwork() {
           name="mainImage"
           id="mainImage"
           onChange={handleMainImageChange}
-          className="mt-1 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100"
+          className={`mt-1 block w-full text-sm text-[var(--muted2)] file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-[var(--primary)]/10 file:text-[var(--primary)] hover:file:bg-[var(--primary)]/20`}
           required
         />
         {mainImage && (
           <div className="mt-2">
-            <p className="text-sm text-gray-500">
+            <p
+              className={`text-sm ${
+                theme === "dark"
+                  ? "text-[var(--muted2)]"
+                  : "text-[var(--muted2)]"
+              }`}
+            >
               Archivo seleccionado: {mainImage.name}
             </p>
           </div>
         )}
       </div>
       <div>
-        <label htmlFor="subImages" className="block text-sm font-medium text-gray-700">
+        <label
+          htmlFor="subImages"
+          className={`block text-sm font-medium ${
+            theme === "dark"
+              ? "text-[var(--foreground)]"
+              : "text-[var(--foreground)]"
+          }`}
+        >
           Subimágenes
         </label>
         <input
@@ -230,20 +307,27 @@ export default function UploadArtwork() {
           id="subImages"
           multiple
           onChange={handleSubImagesChange}
-          className="mt-1 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100"
+          className={`mt-1 block w-full text-sm text-[var(--muted2)] file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-[var(--primary)]/10 file:text-[var(--primary)] hover:file:bg-[var(--primary)]/20`}
           required
         />
         {subImages.length > 0 && (
           <div className="mt-2">
-            <p className="text-sm text-gray-500">
-              Archivos seleccionados: {subImages.map((file) => file.name).join(", ")}
+            <p
+              className={`text-sm ${
+                theme === "dark"
+                  ? "text-[var(--muted2)]"
+                  : "text-[var(--muted2)]"
+              }`}
+            >
+              Archivos seleccionados:{" "}
+              {subImages.map((file) => file.name).join(", ")}
             </p>
           </div>
         )}
       </div>
       <button
         type="submit"
-        className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+        className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-[var(--text-on-primary)] bg-[var(--primary)] hover:bg-[var(--accent)] focus:outline-none focus:ring-2 focus:ring-[var(--primary)] transition-colors"
         disabled={isSubmitting}
       >
         {isSubmitting ? "Subiendo..." : "Subir Cuadro"}
@@ -251,4 +335,3 @@ export default function UploadArtwork() {
     </form>
   );
 }
-

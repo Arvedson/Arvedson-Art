@@ -19,7 +19,9 @@ const Services = () => {
       requestAnimationFrame(() => {
         const scrollY = window.scrollY;
         if (parallaxRef.current) {
-          parallaxRef.current.style.transform = `translateY(${scrollY * 0.5}px)`;
+          parallaxRef.current.style.transform = `translateY(${
+            scrollY * 0.5
+          }px)`;
         }
       });
     };
@@ -29,7 +31,8 @@ const Services = () => {
   }, []);
 
   const themeClasses = {
-    overlayColor: theme === 'light' ? 'var(--muted)' : 'var(--secondary)',
+    overlayColor: theme === "light" ? "var(--muted)" : "var(--secondary)",
+    gradientOpacity: theme === "light" ? 0.7 : 0.6,
   };
 
   return (
@@ -42,18 +45,20 @@ const Services = () => {
             src="/textura1.jpeg"
             alt="Textura de fondo"
             className="absolute inset-0 w-full h-full object-cover transition-transform duration-300 ease-out"
-            style={{ transform: 'translateY(0)' }}
+            style={{ transform: "translateY(0)" }}
           />
-          <div 
-            className="absolute inset-0" 
-            style={{ 
+          <div
+            className="absolute inset-0"
+            style={{
               backgroundColor: themeClasses.overlayColor,
-              opacity: 0.6
+              opacity: 0.6,
             }}
           />
         </div>
         <div className="relative z-10 text-center text-[var(--background)]">
-          <h1 className="text-5xl text-[var(--primary)]  font-bold mb-4">Nuestros Servicios</h1>
+          <h1 className="text-5xl text-[var(--primary)]  font-bold mb-4">
+            Nuestros Servicios
+          </h1>
           <p className="text-xl text-[var(--foreground)]">
             Transformamos tus recuerdos en arte perdurable
           </p>
@@ -87,13 +92,21 @@ const Services = () => {
               icon: SparklesIcon,
               title: "Arte Digital",
               description: "Creaciones digitales para decoración moderna",
-              features: ["Vectorizado profesional", "Formatos 4K/8K", "Animaciones"],
+              features: [
+                "Vectorizado profesional",
+                "Formatos 4K/8K",
+                "Animaciones",
+              ],
             },
             {
               icon: HeartIcon,
               title: "Diseño Personalizado",
               description: "Nuestros artistas realizan tu visión",
-              features: ["3 revisiones", "Asesoría profesional", "Entrega rápida"],
+              features: [
+                "3 revisiones",
+                "Asesoría profesional",
+                "Entrega rápida",
+              ],
             },
             {
               icon: TruckIcon,
@@ -105,20 +118,22 @@ const Services = () => {
               icon: CurrencyDollarIcon,
               title: "Financiamiento",
               description: "Facilidades de pago",
-              features: ["Meses sin intereses", "Opciones corporativas", "Cotización inmediata"],
+              features: [
+                "Meses sin intereses",
+                "Opciones corporativas",
+                "Cotización inmediata",
+              ],
             },
           ].map((service, index) => (
             <div
               key={index}
-              className={`p-8 rounded-xl transition-all duration-300 ${
-                theme === "light"
-                  ? "bg-[var(--muted)] hover:bg-[var(--secondary)]"
-                  : "bg-[var(--secondary)] hover:bg-[var(--primaryblue)]"
-              }`}
+              className="p-8 rounded-xl transition-all duration-300 bg-[var(--card)] hover:bg-[var(--secondary)] border border-[var(--border)] shadow-sm hover:shadow-md"
             >
               <service.icon className="h-16 w-16 text-[var(--primary)] mb-6 mx-auto" />
               <h3 className="text-2xl font-bold mb-4">{service.title}</h3>
-              <p className="mb-6 text-[var(--foreground)]">{service.description}</p>
+              <p className="mb-6 text-[var(--foreground)]">
+                {service.description}
+              </p>
               <ul className="space-y-2">
                 {service.features.map((feature, fIndex) => (
                   <li
@@ -147,68 +162,102 @@ const Services = () => {
         </div>
       </div>
 
-      {/* Proceso de Compra */}
-      <div className="bg-[var(--muted)] py-16">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <h2 className="text-3xl font-bold text-center mb-12">
-            ¿Cómo Funciona?
-          </h2>
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
-            {[
-              { title: "Consulta", text: "Cuéntanos tu idea" },
-              { title: "Diseño", text: "Creación del concepto" },
-              { title: "Producción", text: "Fabricación artesanal" },
-              { title: "Entrega", text: "Instalación opcional" },
-            ].map((step, index) => (
-              <div key={index} className="text-center">
-                <div className="bg-[var(--primary)] text-[var(--background)] w-12 h-12 rounded-full flex items-center justify-center mx-auto mb-4">
-                  {index + 1}
+      {/* Sección combinada con imagen continua */}
+      <div className="relative overflow-hidden">
+        {/* Imagen de fondo continua para ambas secciones */}
+        <div className="absolute inset-0">
+          <img
+            src="/hero3.jpg"
+            alt="Detalle artístico"
+            className="w-full h-full object-cover"
+          />
+          {/* Degradado combinado para ambas secciones */}
+          <div
+            className="absolute inset-0"
+            style={{
+              background: `linear-gradient(to bottom, ${themeClasses.overlayColor} 0%, transparent 50%, ${themeClasses.overlayColor} 100%)`,
+              opacity: themeClasses.gradientOpacity,
+            }}
+          />
+        </div>
+
+        {/* Primera sección: ¿Cómo Funciona? */}
+        <div className="relative z-10 py-16">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <h2
+              className={`text-3xl font-bold text-center mb-12 ${
+                theme === "light"
+                  ? "text-[var(--foreground)]"
+                  : "text-[var(--background)]"
+              }`}
+            >
+              ¿Cómo Funciona?
+            </h2>
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
+              {[
+                { title: "Consulta", text: "Cuéntanos tu idea" },
+                { title: "Diseño", text: "Creación del concepto" },
+                { title: "Producción", text: "Fabricación artesanal" },
+                { title: "Entrega", text: "Instalación opcional" },
+              ].map((step, index) => (
+                <div key={index} className="text-center">
+                  <div className="bg-[var(--primary)] text-[var(--background)] w-12 h-12 rounded-full flex items-center justify-center mx-auto mb-4">
+                    {index + 1}
+                  </div>
+                  <h3
+                    className={`text-xl font-semibold mb-2 ${
+                      theme === "light"
+                        ? "text-[var(--foreground)]"
+                        : "text-[var(--background)]"
+                    }`}
+                  >
+                    {step.title}
+                  </h3>
+                  <p
+                    className={
+                      theme === "light"
+                        ? "text-[var(--foreground)]"
+                        : "text-[var(--background)]"
+                    }
+                  >
+                    {step.text}
+                  </p>
                 </div>
-                <h3 className="text-xl font-semibold mb-2">{step.title}</h3>
-                <p className="text-[var(--foreground)]">{step.text}</p>
-              </div>
-            ))}
+              ))}
+            </div>
+          </div>
+        </div>
+
+        {/* Segunda sección: Listo para Empezar */}
+        <div className="relative z-10 py-16 text-center">
+          <div className="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8">
+            <h2
+              className={`text-3xl font-bold mb-6 ${
+                theme === "light"
+                  ? "text-[var(--foreground)]"
+                  : "text-[var(--background)]"
+              }`}
+            >
+              ¿Listo para Empezar?
+            </h2>
+            <p
+              className={`text-lg mb-8 ${
+                theme === "light"
+                  ? "text-[var(--foreground)]"
+                  : "text-[var(--background)]"
+              }`}
+            >
+              Solicita una cotización personalizada sin compromiso
+            </p>
+            <a
+              href="/contact"
+              className="inline-block bg-[var(--background)] text-[var(--primary)] px-8 py-3 rounded-full font-semibold hover:opacity-90 transition-opacity duration-300"
+            >
+              Contactar Ahora
+            </a>
           </div>
         </div>
       </div>
-
-{/* CTA Final */}
-<div className="relative py-16 text-center overflow-hidden">
-  {/* Imagen de fondo */}
-  <div className="absolute inset-0">
-    <img
-      src="/hero3.jpg"
-      alt="Detalle artístico"
-      className="w-full h-full object-cover"
-    />
-    {/* Overlay dinámico */}
-    <div 
-      className="absolute inset-0"
-      style={{ 
-        backgroundColor: themeClasses.overlayColor,
-        opacity: 0.3
-      }}
-    />
-  </div>
-  
-  {/* Contenido */}
-  <div className="relative z-10">
-    <div className="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8">
-      <h2 className="text-3xl font-bold text-[var(--background)] mb-6">
-        ¿Listo para Empezar?
-      </h2>
-      <p className="text-lg text-[var(--background)] mb-8">
-        Solicita una cotización personalizada sin compromiso
-      </p>
-      <a
-        href="/contact"
-        className="inline-block bg-[var(--background)] text-[var(--primary)] px-8 py-3 rounded-full font-semibold hover:opacity-90 transition-opacity duration-300"
-      >
-        Contactar Ahora
-      </a>
-    </div>
-  </div>
-</div>
     </div>
   );
 };

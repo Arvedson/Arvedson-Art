@@ -34,6 +34,7 @@ const Navbar: React.FC<NavbarProps> = ({ isMobileMenuOpen, toggleMobileMenu }) =
   const toggleTheme = () => {
     const newTheme = theme === "light" ? "dark" : "light";
     document.documentElement.setAttribute("data-theme", newTheme);
+    localStorage.setItem("theme", newTheme);
   };
 
   const toggleCart = () => {

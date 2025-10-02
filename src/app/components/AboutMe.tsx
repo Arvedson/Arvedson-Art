@@ -1,6 +1,5 @@
 "use client";
 
-import useTheme from "@/hooks/useTheme";
 import Image from "next/image";
 
 const testImage2 = "/1.jpeg";
@@ -8,17 +7,8 @@ const testImage1 = "/2.jpeg";
 const testImage3 = "/3.jpeg";
 
 const AboutMe = () => {
-  const theme = useTheme();
-  const isLightTheme = theme === "light";
-
   return (
-    <section
-      className={`px-6 py-16 md:py-24 lg:py-32 transition-all duration-300 ${
-        isLightTheme
-          ? "bg-[var(--background)] text-[var(--foreground)]"
-          : "bg-gray-900 text-gray-100"
-      }`}
-    >
+    <section className="px-6 py-16 md:py-24 lg:py-32 transition-all duration-300 bg-[var(--background)] text-[var(--foreground)]">
       <div className="max-w-7xl mx-auto">
         <div className="flex flex-col lg:flex-row gap-12 lg:gap-20 items-center">
           {/* Sección de Imágenes */}
@@ -61,13 +51,7 @@ const AboutMe = () => {
 
           {/* Sección de Texto */}
           <div className="w-full lg:w-1/2 space-y-8 pt-8">
-            <h2
-              className={`text-4xl md:text-5xl font-bold mb-8 ${
-                isLightTheme
-                  ? "text-[var(--primary)]"
-                  : "text-[var(--primary)]"
-              } relative inline-block`}
-            >
+            <h2 className="text-4xl md:text-5xl font-bold mb-8 text-[var(--primary)] relative inline-block">
               <span className="bg-clip-text text-transparent bg-gradient-to-r from-[var(--primary)] to-purple-600 ">
                 Sobre Mí
               </span>
@@ -75,26 +59,32 @@ const AboutMe = () => {
             </h2>
 
             <blockquote className="text-2xl md:text-3xl font-medium leading-tight border-l-4 border-[var(--primary)] pl-6 italic">
-              El arte es la manifestación física de nuestra conexión emocional con el espacio
+              El arte es la manifestación física de nuestra conexión emocional
+              con el espacio
             </blockquote>
 
-            <div className="space-y-6 text-lg md:text-xl text-gray-600 dark:text-gray-300">
+            <div className="space-y-6 text-lg md:text-xl text-[var(--muted2)]">
               <p className="leading-relaxed">
-                Como <strong className="text-[var(--primary)]">diseñadora industrial</strong> y artista profesional con más de una década de experiencia, mi trabajo trasciende la simple estética para crear <strong>experiencias sensoriales completas</strong>.
+                Como{" "}
+                <strong className="text-[var(--primary)]">
+                  diseñadora industrial
+                </strong>{" "}
+                y artista profesional con más de una década de experiencia, mi
+                trabajo trasciende la simple estética para crear{" "}
+                <strong>experiencias sensoriales completas</strong>.
               </p>
 
               <p className="leading-relaxed">
-                Cada pieza que diseño es un <strong>diálogo entre la forma y la emoción</strong>, donde la innovación técnica se encuentra con la expresión artística. Mis obras han sido descritas como <em>portales hacia estados de conciencia elevados</em> por críticos internacionales.
+                Cada pieza que diseño es un{" "}
+                <strong>diálogo entre la forma y la emoción</strong>, donde la
+                innovación técnica se encuentra con la expresión artística. Mis
+                obras han sido descritas como{" "}
+                <em>portales hacia estados de conciencia elevados</em> por
+                críticos internacionales.
               </p>
 
               {/* Card responsive al tema */}
-              <div
-                className={`p-6 rounded-xl border ${
-                  isLightTheme
-                    ? "bg-[var(--muted)] text-[var(--foreground)] border-[var(--border)]"
-                    : "bg-[var(--secondary)] text-[var(--foreground)] border-[var(--border)]"
-                }`}
-              >
+              <div className="p-6 rounded-xl border bg-[var(--card)] text-[var(--foreground)] border-[var(--border)] shadow-sm">
                 <p className="mb-4 font-semibold text-[var(--primary)]">
                   📌 Filosofía de diseño:
                 </p>
@@ -106,14 +96,23 @@ const AboutMe = () => {
               </div>
 
               <p className="leading-relaxed">
-                Especializada en <strong>instalaciones site-specific</strong>, mi proceso creativo integra:
+                Especializada en <strong>instalaciones site-specific</strong>,
+                mi proceso creativo integra:
               </p>
-              
+
               <div className="grid grid-cols-2 gap-4 text-center">
-                <span className="px-4 py-2 bg-[var(--primary)/10] rounded-full">Realidad aumentada</span>
-                <span className="px-4 py-2 bg-[var(--primary)/10] rounded-full">Biomateriales</span>
-                <span className="px-4 py-2 bg-[var(--primary)/10] rounded-full">Kinética lumínica</span>
-                <span className="px-4 py-2 bg-[var(--primary)/10] rounded-full">Geometría emocional</span>
+                <span className="px-4 py-2 bg-[var(--secondary)] text-[var(--foreground)] rounded-full border border-[var(--border)]">
+                  Realidad aumentada
+                </span>
+                <span className="px-4 py-2 bg-[var(--secondary)] text-[var(--foreground)] rounded-full border border-[var(--border)]">
+                  Biomateriales
+                </span>
+                <span className="px-4 py-2 bg-[var(--secondary)] text-[var(--foreground)] rounded-full border border-[var(--border)]">
+                  Kinética lumínica
+                </span>
+                <span className="px-4 py-2 bg-[var(--secondary)] text-[var(--foreground)] rounded-full border border-[var(--border)]">
+                  Geometría emocional
+                </span>
               </div>
             </div>
           </div>

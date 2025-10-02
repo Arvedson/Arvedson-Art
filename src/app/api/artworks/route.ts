@@ -4,9 +4,7 @@ import { NextResponse } from "next/server";
 import { NextRequest } from "next/server"; // Importa NextRequest
 import { getImageDimensions } from "@/utils/imageUtils"; // Importa la función
 
-
 const prisma = new PrismaClient();
-
 
 export async function POST(req: Request) {
   try {
@@ -19,7 +17,7 @@ export async function POST(req: Request) {
     const marco = formData.get("marco") as string | null;
     const files = formData.getAll("images") as File[];
 
-    if (!title || !description || !order || files.length === 0) {
+    if (!title || !description || files.length === 0) {
       return new Response(
         JSON.stringify({ error: "Todos los campos son obligatorios" }),
         { status: 400 }
@@ -69,10 +67,9 @@ export async function POST(req: Request) {
     return new Response(JSON.stringify(newArtwork), { status: 201 });
   } catch (error) {
     console.error("Error al crear el cuadro:", error);
-    return new Response(
-      JSON.stringify({ error: "Error al crear el cuadro" }),
-      { status: 500 }
-    );
+    return new Response(JSON.stringify({ error: "Error al crear el cuadro" }), {
+      status: 500,
+    });
   }
 }
 

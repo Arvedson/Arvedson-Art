@@ -1,26 +1,33 @@
 import { PrismaClient } from "@prisma/client";
- import { bucket } from "@/utils/firebaseAdmin";
- import { NextResponse } from "next/server";
- import { NextRequest } from "next/server";
- import { getImageDimensions } from "@/utils/imageUtils";
- 
- const prisma = new PrismaClient();
- 
+import { bucket } from "@/utils/firebaseAdmin";
+import { NextResponse } from "next/server";
+import { NextRequest } from "next/server";
+import { getImageDimensions } from "@/utils/imageUtils";
+
+const prisma = new PrismaClient();
 
 // POST Corregido
 export async function POST(req: Request) {
   try {
     const formData = await req.formData();
-    
+
     // Validación y casteo seguro
     const title = formData.get("title")?.toString() || "";
     const description = formData.get("description")?.toString() || "";
     const price = Number(formData.get("price"));
     const stockQuantity = Number(formData.get("stockQuantity"));
-    const files = formData.getAll("images").filter((f): f is File => f instanceof File);
+    const files = formData
+      .getAll("images")
+      .filter((f): f is File => f instanceof File);
 
     // Validación mejorada
-    if (!title || !description || isNaN(price) || isNaN(stockQuantity) || files.length === 0) {
+    if (
+      !title ||
+      !description ||
+      isNaN(price) ||
+      isNaN(stockQuantity) ||
+      files.length === 0
+    ) {
       return NextResponse.json(
         { error: "Datos de entrada inválidos" },
         { status: 400 }
@@ -30,10 +37,12 @@ export async function POST(req: Request) {
     // Subida de archivos
     const urls: string[] = [];
     for (const file of files) {
-      const sanitizedTitle = title.replace(/[^a-z0-9]/gi, '_').toLowerCase();
-      const fileName = `art-dav/stock/${sanitizedTitle}/${Date.now()}_${file.name}`;
+      const sanitizedTitle = title.replace(/[^a-z0-9]/gi, "_").toLowerCase();
+      const fileName = `art-dav/stock/${sanitizedTitle}/${Date.now()}_${
+        file.name
+      }`;
       const fileUpload = bucket.file(fileName);
-      
+
       const buffer = Buffer.from(await file.arrayBuffer());
       await fileUpload.save(buffer, {
         metadata: { contentType: file.type },
@@ -59,7 +68,7 @@ export async function POST(req: Request) {
         tecnica: formData.get("tecnica")?.toString(),
         marco: formData.get("marco")?.toString(),
         subImages: {
-          create: urls.slice(1).map(url => ({ imageUrl: url })),
+          create: urls.slice(1).map((url) => ({ imageUrl: url })),
         },
         // Asegurar que getImageDimensions funciona con URLs de Firebase
         ...(await getImageDimensions(urls[0])),
@@ -76,7 +85,6 @@ export async function POST(req: Request) {
   }
 }
 
-
 // GET Corregido
 export async function GET() {
   try {
@@ -85,12 +93,12 @@ export async function GET() {
       orderBy: { order: "asc" },
     });
 
-    return NextResponse.json(artworks, { 
+    return NextResponse.json(artworks, {
       status: 200,
       headers: {
-        'Content-Type': 'application/json',
-        'Cache-Control': 'public, max-age=3600'
-      }
+        "Content-Type": "application/json",
+        "Cache-Control": "public, max-age=3600",
+      },
     });
   } catch (error) {
     console.error("Error GET:", error);
@@ -100,11 +108,52 @@ export async function GET() {
     );
   }
 }
- 
- 
 
- // DELETE: Eliminar un cuadro en stock y sus subimágenes asociadas
- export async function DELETE(req: NextRequest) {
+// PUT: Actualizar el orden de los cuadros en stock
+export async function PUT(req: NextRequest) {
+  try {
+    const body = await req.json();
+    const { artworks } = body;
+
+    if (!Array.isArray(artworks)) {
+      return NextResponse.json(
+        { error: "El cuerpo de la solicitud debe ser un array de artworks" },
+        { status: 400 }
+      );
+    }
+
+    for (const artwork of artworks) {
+      const { id, order } = artwork;
+
+      if (!id || !Number.isInteger(order)) {
+        return NextResponse.json(
+          { error: "Cada artwork debe tener un 'id' y un 'order' válido" },
+          { status: 400 }
+        );
+      }
+
+      // Actualizar el orden del cuadro en la base de datos
+      await prisma.stockArtwork.update({
+        where: { id },
+        data: { order: Number(order) },
+      });
+    }
+
+    return NextResponse.json(
+      { message: "Orden actualizado exitosamente" },
+      { status: 200 }
+    );
+  } catch (error) {
+    console.error(error);
+    return NextResponse.json(
+      { error: "Error al actualizar el orden" },
+      { status: 500 }
+    );
+  }
+}
+
+// DELETE: Eliminar un cuadro en stock y sus subimágenes asociadas
+export async function DELETE(req: NextRequest) {
   try {
     console.log("Iniciando DELETE...");
     const id = parseInt(new URL(req.url).searchParams.get("id") || "");
@@ -124,14 +173,17 @@ export async function GET() {
 
     if (!artwork) {
       console.error("Artwork no encontrado");
-      return NextResponse.json({ error: "Artwork no encontrado" }, { status: 404 });
+      return NextResponse.json(
+        { error: "Artwork no encontrado" },
+        { status: 404 }
+      );
     }
 
     console.log("Eliminando imágenes de Firebase...");
     // Eliminar imagen principal
     try {
       const mainImagePath = decodeURIComponent(
-        new URL(artwork.mainImageUrl).pathname.split('/o/')[1].split('?')[0]
+        new URL(artwork.mainImageUrl).pathname.split("/o/")[1].split("?")[0]
       );
       console.log("Eliminando imagen principal:", mainImagePath);
       await bucket.file(mainImagePath).delete();
@@ -143,7 +195,7 @@ export async function GET() {
     for (const subImage of artwork.subImages) {
       try {
         const subImagePath = decodeURIComponent(
-          new URL(subImage.imageUrl).pathname.split('/o/')[1].split('?')[0]
+          new URL(subImage.imageUrl).pathname.split("/o/")[1].split("?")[0]
         );
         console.log("Eliminando subimagen:", subImagePath);
         await bucket.file(subImagePath).delete();

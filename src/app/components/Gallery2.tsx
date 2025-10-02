@@ -2,6 +2,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import { Carousel } from "react-responsive-carousel";
 import "react-responsive-carousel/lib/styles/carousel.min.css";
+import useTheme from "@/hooks/useTheme";
 
 type Artwork = {
   id: number;
@@ -23,6 +24,7 @@ export default function Gallery2() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingOrder, setEditingOrder] = useState<number | null>(null);
   const inputRefs = useRef<Map<number, HTMLInputElement>>(new Map());
+  const theme = useTheme();
 
   useEffect(() => {
     const fetchArtworks = async () => {
@@ -103,7 +105,9 @@ export default function Gallery2() {
 
   const handleDeleteArtwork = async (id: number) => {
     try {
-      const confirmed = confirm("¿Estás seguro de que deseas eliminar este cuadro?");
+      const confirmed = confirm(
+        "¿Estás seguro de que deseas eliminar este cuadro?"
+      );
       if (!confirmed) return;
 
       const response = await fetch(`/api/artworks?id=${id}`, {
@@ -134,11 +138,17 @@ export default function Gallery2() {
         {artworksWithOrder.map((art) => (
           <div
             key={art.id}
-            className="artwork-item rounded-lg shadow-lg border bg-white relative"
+            className={`artwork-item rounded-lg shadow-lg border relative ${
+              theme === "dark"
+                ? "bg-[var(--card)] border-[var(--border)]"
+                : "bg-[var(--card)] border-[var(--border)]"
+            }`}
           >
             <div
               className="relative w-full aspect-w-4 aspect-h-3 cursor-pointer"
-              onClick={() => handleArtworkClick(art.mainImageUrl, art.subImages)}
+              onClick={() =>
+                handleArtworkClick(art.mainImageUrl, art.subImages)
+              }
             >
               <img
                 src={art.mainImageUrl}
@@ -147,22 +157,68 @@ export default function Gallery2() {
               />
             </div>
             <div className="p-4">
-              <h2 className="text-lg font-bold truncate">{art.title}</h2>
-              <p className="text-sm truncate text-gray-600">
+              <h2
+                className={`text-lg font-bold truncate ${
+                  theme === "dark"
+                    ? "text-[var(--foreground)]"
+                    : "text-[var(--foreground)]"
+                }`}
+              >
+                {art.title}
+              </h2>
+              <p
+                className={`text-sm truncate ${
+                  theme === "dark"
+                    ? "text-[var(--muted2)]"
+                    : "text-[var(--muted2)]"
+                }`}
+              >
                 {art.description}
               </p>
               {art.medidas && (
-                <p className="text-xs text-gray-500">Medidas: {art.medidas}</p>
+                <p
+                  className={`text-xs ${
+                    theme === "dark"
+                      ? "text-[var(--muted2)]"
+                      : "text-[var(--muted2)]"
+                  }`}
+                >
+                  Medidas: {art.medidas}
+                </p>
               )}
               {art.tecnica && (
-                <p className="text-xs text-gray-500">Técnica: {art.tecnica}</p>
+                <p
+                  className={`text-xs ${
+                    theme === "dark"
+                      ? "text-[var(--muted2)]"
+                      : "text-[var(--muted2)]"
+                  }`}
+                >
+                  Técnica: {art.tecnica}
+                </p>
               )}
               {art.marco && (
-                <p className="text-xs text-gray-500">Marco: {art.marco}</p>
+                <p
+                  className={`text-xs ${
+                    theme === "dark"
+                      ? "text-[var(--muted2)]"
+                      : "text-[var(--muted2)]"
+                  }`}
+                >
+                  Marco: {art.marco}
+                </p>
               )}
               <div className="flex items-center justify-between mt-2">
                 <div className="flex items-center gap-2">
-                  <span className="text-xs text-gray-500">Orden:</span>
+                  <span
+                    className={`text-xs ${
+                      theme === "dark"
+                        ? "text-[var(--muted2)]"
+                        : "text-[var(--muted2)]"
+                    }`}
+                  >
+                    Orden:
+                  </span>
                   {editingOrder === art.id ? (
                     <>
                       <input
@@ -174,7 +230,11 @@ export default function Gallery2() {
                             handleInputChange(art.id, newOrder);
                           }
                         }}
-                        className="w-16 h-8 text-sm border border-gray-300 rounded-md px-2"
+                        className={`w-16 h-8 text-sm border rounded-md px-2 ${
+                          theme === "dark"
+                            ? "border-[var(--border)] bg-[var(--card)] text-[var(--foreground)]"
+                            : "border-[var(--border)] bg-[var(--card)] text-[var(--foreground)]"
+                        }`}
                         ref={(el) => {
                           if (el) {
                             inputRefs.current.set(art.id, el);
@@ -186,20 +246,30 @@ export default function Gallery2() {
                       />
                       <button
                         onClick={() => handleSaveOrder(art.id)}
-                        className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-1 px-2 rounded text-xs"
+                        className="bg-[var(--primary)] hover:bg-[var(--accent)] text-[var(--text-on-primary)] font-bold py-1 px-2 rounded text-xs transition-colors"
                       >
                         Guardar
                       </button>
                     </>
                   ) : (
-                    <span className="text-sm text-gray-700">
+                    <span
+                      className={`text-sm ${
+                        theme === "dark"
+                          ? "text-[var(--foreground)]"
+                          : "text-[var(--foreground)]"
+                      }`}
+                    >
                       {art.order}
                       <button
                         onClick={(e) => {
                           e.stopPropagation();
                           handleEditClick(art.id);
                         }}
-                        className="ml-2 bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-1 px-2 rounded text-xs"
+                        className={`ml-2 font-bold py-1 px-2 rounded text-xs transition-colors ${
+                          theme === "dark"
+                            ? "bg-[var(--secondary)] hover:bg-[var(--muted)] text-[var(--foreground)]"
+                            : "bg-[var(--secondary)] hover:bg-[var(--muted)] text-[var(--foreground)]"
+                        }`}
                       >
                         Editar
                       </button>
@@ -211,7 +281,7 @@ export default function Gallery2() {
                     e.stopPropagation();
                     handleDeleteArtwork(art.id);
                   }}
-                  className="bg-red-500 hover:bg-red-700 text-white font-bold py-1 px-2 rounded text-xs"
+                  className="bg-[var(--negative)] hover:bg-red-600 text-white font-bold py-1 px-2 rounded text-xs transition-colors"
                 >
                   Eliminar
                 </button>
@@ -228,7 +298,11 @@ export default function Gallery2() {
           onClick={closeModal}
         >
           <div
-            className={`bg-white text-gray-900 rounded-lg shadow-lg w-full max-w-4xl relative overflow-hidden`}
+            className={`rounded-lg shadow-lg w-full max-w-4xl relative overflow-hidden ${
+              theme === "dark"
+                ? "bg-[var(--card)] text-[var(--foreground)]"
+                : "bg-[var(--card)] text-[var(--foreground)]"
+            }`}
             onClick={(e) => e.stopPropagation()}
           >
             <button
@@ -278,4 +352,3 @@ export default function Gallery2() {
     </div>
   );
 }
-

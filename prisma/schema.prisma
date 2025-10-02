@@ -101,6 +101,7 @@ model Order {
   updatedAt     DateTime     @updatedAt
 
   events        Event[]
+  messages      Message[]
 }
 
 model Event {
@@ -118,4 +119,30 @@ enum OrderStatus {
   PRODUCTION
   SHIPPED
   DELIVERED
+}
+
+enum MessageType {
+  TEXT
+  IMAGE
+  SYSTEM
+}
+
+enum MessageSender {
+  CUSTOMER
+  ARTIST
+  SYSTEM
+}
+
+model Message {
+  id        String        @id @default(cuid())
+  orderId   String
+  sender    MessageSender
+  type      MessageType
+  content   String?
+  imageUrl  String?
+  isRead    Boolean       @default(false)
+  createdAt DateTime      @default(now())
+  updatedAt DateTime      @updatedAt
+
+  order     Order         @relation(fields: [orderId], references: [id], onDelete: Cascade)
 }
